@@ -50,6 +50,7 @@ if __name__ == '__main__':
         description='Manage your contacts.',
         long_description=readme(),
         long_description_content_type='text/x-rst',
+        url='https://pypi.org/project/Contacts/',
         author='Delvian Valentine',
         author_email='delvian.valentine@gmail.com',
         classifiers=[
