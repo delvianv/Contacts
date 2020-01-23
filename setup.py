@@ -54,7 +54,7 @@ if __name__ == '__main__':
         author='Delvian Valentine',
         author_email='delvian.valentine@gmail.com',
         classifiers=[
-            'Development Status :: 4 - Beta',
+            'Development Status :: 5 - Production/Stable',
             'Environment :: Console',
             'Intended Audience :: End Users/Desktop',
             'License :: OSI Approved :: '

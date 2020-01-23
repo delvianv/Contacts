@@ -37,7 +37,7 @@ sys.path.insert(0, '..')
 import contacts
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '0.2.4'
+__version__ = '1.0'
 
 
 class About(unittest.TestCase):
