@@ -49,7 +49,7 @@ if __name__ == '__main__':
         version=f'{__version__}',
         description='Manage your contacts.',
         long_description=readme(),
-        long_description_content_type='text/x-rst',
+        long_description_content_type='text/markdown',
         url='https://pypi.org/project/Contacts/',
         author='Delvian Valentine',
         author_email='delvian.valentine@gmail.com',
@@ -64,6 +64,7 @@ if __name__ == '__main__':
             'Programming Language :: Python :: 3.7',
             'Topic :: Utilities'
         ],
+        project_urls={'GitHub': 'https://github.com/delvianv/Contacts'},
         keywords='contacts',
         py_modules=['contacts'],
         python_requires='>=3.7',

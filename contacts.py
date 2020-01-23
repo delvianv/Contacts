@@ -37,7 +37,7 @@ import os.path
 import sys
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '0.2.1'
+__version__ = '0.2.4'
 
 
 class Delete(argparse.Action):
