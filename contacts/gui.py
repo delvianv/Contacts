@@ -48,6 +48,41 @@ class About(tk.Toplevel):
         frame.grid()
 
 
+class Contact(tk.Toplevel):
+
+    """The Contact window"""
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.name = tk.StringVar()
+        self.email = tk.StringVar()
+        # Frame
+        frame = ttk.Frame(self)
+        # Labels
+        ttk.Label(frame, text='Full name:').grid(column=0, row=0)
+        ttk.Label(frame, text='Email address:').grid(column=0, row=1)
+        # Entries
+        ttk.Entry(frame, textvariable=self.name).grid(column=1, row=0)
+        ttk.Entry(frame, textvariable=self.email).grid(column=1, row=1)
+        # Buttons
+        buttons_frame = ttk.Frame(frame)
+        ttk.Button(
+            buttons_frame,
+            text='Cancel',
+            command=self.destroy
+        ).grid(column=0, row=0)
+        ttk.Button(
+            buttons_frame,
+            text='Save',
+            command=self.save
+        ).grid(column=1, row=0)
+        buttons_frame.grid(column=0, row=2, columnspan=2)
+        frame.grid()
+
+    def save(self):
+        """Save the contact."""
+
+
 class GUI(tk.Tk):
 
     """The graphical user interface"""
@@ -65,6 +100,7 @@ class GUI(tk.Tk):
         # Contact menu
         contact_menu = tk.Menu(menubar)
         contact_menu.add_command(label='New', command=lambda: New(self))
+        contact_menu.add_command(label='Open', command=self.open)
         contact_menu.add_command(label='Delete', command=self.delete)
         contact_menu.add_separator()
         contact_menu.add_command(label='Quit', command=self.quit)
@@ -101,44 +137,44 @@ class GUI(tk.Tk):
         self.tree.grid()
         frame.grid(column=0, row=0)
 
+    def open(self):
+        """Open the contacts that are selected."""
+        for item in self.tree.selection():
+            Open(self, self.tree.item(item, 'text'))
 
-class New(tk.Toplevel):
+
+class New(Contact):
 
     """The New Contact window"""
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.name = tk.StringVar()
-        self.email = tk.StringVar()
         # Window
         self.title('New Contact')
-        # Frame
-        frame = ttk.Frame(self)
-        # Labels
-        ttk.Label(frame, text='Full name:').grid(column=0, row=0)
-        ttk.Label(frame, text='Email address:').grid(column=0, row=1)
-        # Entries
-        ttk.Entry(frame, textvariable=self.name).grid(column=1, row=0)
-        ttk.Entry(frame, textvariable=self.email).grid(column=1, row=1)
-        # Buttons
-        buttons_frame = ttk.Frame(frame)
-        ttk.Button(
-            buttons_frame,
-            text='Cancel',
-            command=self.destroy
-        ).grid(column=0, row=0)
-        ttk.Button(
-            buttons_frame,
-            text='Save',
-            command=self.save
-        ).grid(column=1, row=0)
-        buttons_frame.grid(column=0, row=2, columnspan=2)
-        frame.grid()
 
     def save(self):
         """Save the contact."""
         contacts.Parser().parse_args(
             ['--new', self.name.get(), self.email.get()]
+        )
+        self.destroy()
+
+
+class Open(Contact):
+
+    """The Open Contact window"""
+
+    def __init__(self, parent, name):
+        super().__init__(parent)
+        self.name.set(name)
+        self.email.set(contacts.load()[name])
+        # Window
+        self.title(name)
+
+    def save(self):
+        """Save the contact."""
+        contacts.Parser().parse_args(
+            ['--edit', self.name.get(), self.email.get()]
         )
         self.destroy()
 

@@ -17,7 +17,7 @@
 """Store your contacts."""
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0.dev6'
+__version__ = '2.0.dev7'
 
 import os.path
 
