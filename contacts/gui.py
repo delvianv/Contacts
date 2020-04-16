@@ -18,6 +18,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import contacts as package
+from contacts import contacts
 
 
 class About(tk.Toplevel):
@@ -66,6 +67,16 @@ class GUI(tk.Tk):
         help_menu.add_command(label='About', command=lambda: About(self))
         menubar.add_cascade(menu=help_menu, label='Help')
         self['menu'] = menubar
+        # Frame
+        frame = ttk.Frame(self)
+        # Tree
+        tree = ttk.Treeview(frame, columns=['email'])
+        tree.heading('#0', text='Full name')
+        tree.heading('email', text='Email address')
+        for name in sorted(people := contacts.load()):
+            tree.insert('', 'end', text=name, values=[people[name]])
+        tree.grid()
+        frame.grid()
         self.mainloop()
 
 
