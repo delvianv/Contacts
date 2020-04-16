@@ -23,7 +23,7 @@ from contacts import contacts
 
 class About(tk.Toplevel):
 
-    """The About window"""
+    """The About Contacts window"""
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -55,11 +55,14 @@ class GUI(tk.Tk):
         super().__init__()
         # Window
         self.title('Contacts')
+        self.bind('<FocusIn>', lambda e: self.load())
         # Menubar
         self.option_add('*tearOff', tk.FALSE)
         menubar = tk.Menu(self)
         # Contact menu
         contact_menu = tk.Menu(menubar)
+        contact_menu.add_command(label='New', command=lambda: New(self))
+        contact_menu.add_separator()
         contact_menu.add_command(label='Quit', command=self.quit)
         menubar.add_cascade(menu=contact_menu, label='Contact')
         # Help menu
@@ -67,6 +70,10 @@ class GUI(tk.Tk):
         help_menu.add_command(label='About', command=lambda: About(self))
         menubar.add_cascade(menu=help_menu, label='Help')
         self['menu'] = menubar
+        self.mainloop()
+
+    def load(self):
+        """Load the contacts."""
         # Frame
         frame = ttk.Frame(self)
         # Tree
@@ -76,8 +83,48 @@ class GUI(tk.Tk):
         for name in sorted(people := contacts.load()):
             tree.insert('', 'end', text=name, values=[people[name]])
         tree.grid()
+        frame.grid(column=0, row=0)
+
+
+class New(tk.Toplevel):
+
+    """The New Contact window"""
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.name = tk.StringVar()
+        self.email = tk.StringVar()
+        # Window
+        self.title('New Contact')
+        # Frame
+        frame = ttk.Frame(self)
+        # Labels
+        ttk.Label(frame, text='Full name:').grid(column=0, row=0)
+        ttk.Label(frame, text='Email address:').grid(column=0, row=1)
+        # Entries
+        ttk.Entry(frame, textvariable=self.name).grid(column=1, row=0)
+        ttk.Entry(frame, textvariable=self.email).grid(column=1, row=1)
+        # Buttons
+        buttons_frame = ttk.Frame(frame)
+        ttk.Button(
+            buttons_frame,
+            text='Cancel',
+            command=self.destroy
+        ).grid(column=0, row=0)
+        ttk.Button(
+            buttons_frame,
+            text='Save',
+            command=self.save
+        ).grid(column=1, row=0)
+        buttons_frame.grid(column=0, row=2, columnspan=2)
         frame.grid()
-        self.mainloop()
+
+    def save(self):
+        """Save the contact."""
+        contacts.Parser().parse_args(
+            ['--new', self.name.get(), self.email.get()]
+        )
+        self.destroy()
 
 
 def main():
