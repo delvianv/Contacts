@@ -15,7 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0.dev2'
+__version__ = '2.0.dev3'
 
 import unittest
 
@@ -36,6 +36,10 @@ class About(unittest.TestCase):
         """Test the contact details of the author."""
         self.assertEqual(__author__, package.__author__)
 
+    def test_copyright(self):
+        """Test the copyright of the app."""
+        self.assertEqual(COPYRIGHT, package.COPYRIGHT)
+
     def test_description(self):
         """Test the description of the app."""
         self.assertEqual('Store your contacts.', package.__doc__)
@@ -44,6 +48,12 @@ class About(unittest.TestCase):
         """Test the version of the app."""
         self.assertEqual(__version__, package.__version__)
 
+
+COPYRIGHT = f'''Copyright (C) 2020  {__author__}
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under
+certain conditions.  See the GNU General Public License for more
+details <https://www.gnu.org/licenses/>.'''
 
 if __name__ == '__main__':
     unittest.main()

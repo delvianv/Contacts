@@ -80,14 +80,14 @@ class New(argparse.Action):
 
 class Parser(argparse.ArgumentParser):
 
-    """The command line parser."""
+    """The command line parser"""
 
     # noinspection PyTypeChecker
     def __init__(self):
         super().__init__(
             usage='%(prog)s [OPTIONS] [SEARCH]',
             description=package.__doc__,
-            epilog=COPYRIGHT,
+            epilog=package.COPYRIGHT,
             formatter_class=argparse.RawDescriptionHelpFormatter,
             add_help=False
         )
@@ -220,11 +220,6 @@ def main():
         show()
 
 
-COPYRIGHT = f'''Copyright (C) 2020  {package.__author__}
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it under
-certain conditions.  See the GNU General Public License for more
-details <https://www.gnu.org/licenses/>.'''
 # Store the contacts in a temporary file while developing the app.
 DEV_MODE = True
 FILE = '.contacts' if DEV_MODE else os.path.expanduser('~/.contacts')

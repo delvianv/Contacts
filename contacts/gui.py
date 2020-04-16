@@ -15,14 +15,57 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import tkinter as tk
+from tkinter import ttk
+
+import contacts as package
+
+
+class About(tk.Toplevel):
+
+    """The About window"""
+
+    def __init__(self, parent):
+        super().__init__(parent)
+        # Window
+        self.title('About Contacts')
+        # Frame
+        frame = ttk.Frame(self)
+        # Labels
+        ttk.Label(
+            frame,
+            text=f'Contacts {package.__version__}'
+        ).grid(column=0, row=0)
+        ttk.Label(frame, text=package.__doc__).grid(column=0, row=1)
+        ttk.Label(frame, text=package.COPYRIGHT).grid(column=0, row=2)
+        # Close button
+        ttk.Button(
+            frame,
+            text='Close',
+            command=self.destroy
+        ).grid(column=0, row=3)
+        frame.grid()
 
 
 class GUI(tk.Tk):
 
-    """The graphical user interface."""
+    """The graphical user interface"""
 
     def __init__(self):
         super().__init__()
+        # Window
+        self.title('Contacts')
+        # Menubar
+        self.option_add('*tearOff', tk.FALSE)
+        menubar = tk.Menu(self)
+        # Contact menu
+        contact_menu = tk.Menu(menubar)
+        contact_menu.add_command(label='Quit', command=self.quit)
+        menubar.add_cascade(menu=contact_menu, label='Contact')
+        # Help menu
+        help_menu = tk.Menu(menubar)
+        help_menu.add_command(label='About', command=lambda: About(self))
+        menubar.add_cascade(menu=help_menu, label='Help')
+        self['menu'] = menubar
         self.mainloop()
 
 

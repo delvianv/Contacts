@@ -100,7 +100,7 @@ class Parser(unittest.TestCase):
 
     def test_epilog(self):
         """Test the epilog of the parser."""
-        self.assertEqual(COPYRIGHT, self.parser.epilog)
+        self.assertEqual(package.COPYRIGHT, self.parser.epilog)
 
     def test_formatter(self):
         """Test the help formatter of the parser."""
@@ -160,11 +160,6 @@ class State(unittest.TestCase):
 
 # Store the contacts in a temporary file while testing the app.
 contacts.FILE = '.test_contacts'
-COPYRIGHT = f'''Copyright (C) 2020  {package.__author__}
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it under
-certain conditions.  See the GNU General Public License for more
-details <https://www.gnu.org/licenses/>.'''
 
 if __name__ == '__main__':
     unittest.main()

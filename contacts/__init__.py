@@ -17,4 +17,10 @@
 """Store your contacts."""
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0.dev2'
+__version__ = '2.0.dev3'
+
+COPYRIGHT = f'''Copyright (C) 2020  {__author__}
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under
+certain conditions.  See the GNU General Public License for more
+details <https://www.gnu.org/licenses/>.'''
