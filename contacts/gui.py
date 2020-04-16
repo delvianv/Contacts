@@ -1,4 +1,4 @@
-#  __init__.py: The package
+#  gui.py: The graphical user interface
 #  Copyright (C) 2020  Delvian Valentine <delvian.valentine@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,22 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""Store your contacts."""
+import tkinter as tk
 
-__author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0.dev2'
+
+class GUI(tk.Tk):
+
+    """The graphical user interface."""
+
+    def __init__(self):
+        super().__init__()
+        self.mainloop()
+
+
+def main():
+    """Run the app."""
+    GUI()
+
+
+if __name__ == '__main__':
+    main()

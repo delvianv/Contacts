@@ -42,8 +42,7 @@ class Delete(argparse.Action):
     """Delete a contact."""
 
     def __call__(self, parser, namespace, name, option_string=None):
-        contacts = load()
-        if name in contacts:
+        if name in (contacts := load()):
             del contacts[name]
             save(contacts)
             print(f'{name} was deleted.')
@@ -56,9 +55,8 @@ class Edit(argparse.Action):
     """Edit a contact."""
 
     def __call__(self, parser, namespace, values, option_string=None):
-        contacts = load()
         name, email = values
-        if name in contacts:
+        if name in (contacts := load()):
             contacts[name] = email
             save(contacts)
             print(f'{name} was edited.')
@@ -71,9 +69,8 @@ class New(argparse.Action):
     """Create a contact."""
 
     def __call__(self, parser, namespace, values, option_string=None):
-        contacts = load()
         name, email = values
-        if name not in contacts:
+        if name not in (contacts := load()):
             contacts[name] = email
             save(contacts)
             print(f'{name} was created.')
@@ -85,9 +82,9 @@ class Parser(argparse.ArgumentParser):
 
     """The command line parser."""
 
+    # noinspection PyTypeChecker
     def __init__(self):
-        argparse.ArgumentParser.__init__(
-            self,
+        super().__init__(
             usage='%(prog)s [OPTIONS] [SEARCH]',
             description=package.__doc__,
             epilog=COPYRIGHT,
@@ -182,9 +179,8 @@ def search(terms):
 
     Return a list of contacts that match the search.
     """
-    contacts = load()
     results = []
-    for name in contacts:
+    for name in (contacts := load()):
         for term in terms:
             if term not in name and term not in contacts[name]:
                 break
@@ -199,7 +195,6 @@ def show(names=None):
     ARGUMENT
       names             A list of contacts to show.
     """
-    contacts = load()
     if names is not None:
         # Only show the named contacts.
         if names:
@@ -208,7 +203,7 @@ def show(names=None):
             print('None of your contacts match your search.')
     else:
         # Show all of the contacts.
-        if contacts:
+        if contacts := load():
             print_(list(contacts))
         else:
             print('You do not have any contacts.')
@@ -217,11 +212,10 @@ def show(names=None):
 def main():
     """Run the app."""
     args = Parser().parse_args()
-    argv = sys.argv[1:]
     if args.search:
         # Search the contacts if there are search terms on the command line.
         show(search(args.search))
-    if not argv:
+    if not sys.argv[1:]:
         # Show the contacts if there are no arguments on the command line.
         show()
 

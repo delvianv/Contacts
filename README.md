@@ -14,6 +14,12 @@ Store your contacts.
 
 ### How to use the app
 
+**The graphical user interface**
+
+    contacts_gui
+    
+**The command line interface**
+
     contacts [OPTIONS] [SEARCH]
 
     positional arguments:

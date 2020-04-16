@@ -16,7 +16,7 @@
 
 """Run the app."""
 
-from contacts import contacts
+from contacts import gui
 
 if __name__ == '__main__':
-    contacts.main()
+    gui.main()

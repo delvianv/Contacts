@@ -52,20 +52,24 @@ if __name__ == '__main__':
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Environment :: Console',
+            'Environment :: MacOS X',
+            'Environment :: Win32 (MS Windows)',
+            'Environment :: X11 Applications',
             'Intended Audience :: End Users/Desktop',
             'License '
             ':: OSI Approved '
             ':: GNU General Public License v3 or later (GPLv3+)',
             'Natural Language :: English',
             'Operating System :: OS Independent',
-            'Programming Language :: Python :: 3.7',
+            'Programming Language :: Python :: 3.8',
             'Topic :: Utilities'
         ],
         project_urls={'GitHub': 'https://github.com/delvianv/Contacts/'},
         keywords='contacts',
         packages=setuptools.find_packages(),
-        python_requires='>=3.7',
+        python_requires='>=3.8',
         entry_points={
-            'console_scripts': ['contacts=contacts.contacts:main']
+            'console_scripts': ['contacts=contacts.contacts:main'],
+            'gui_scripts': ['contacts_gui=contacts.gui:main']
         }
     )
