@@ -21,10 +21,7 @@
 import setuptools
 import sys
 
-import contacts
-
-__author__ = contacts.__author__
-__version__ = contacts.__version__
+import contacts as package
 
 
 def readme():
@@ -42,33 +39,33 @@ def readme():
 
 README_FILE = 'README.txt'
 
-
 if __name__ == '__main__':
     setuptools.setup(
         name='Contacts',
-        version=f'{__version__}',
-        description='Manage your contacts.',
+        version=f'{package.__version__}',
+        description=package.__doc__,
         long_description=readme(),
         long_description_content_type='text/markdown',
         url='https://pypi.org/project/Contacts/',
         author='Delvian Valentine',
         author_email='delvian.valentine@gmail.com',
         classifiers=[
-            'Development Status :: 5 - Production/Stable',
+            'Development Status :: 3 - Alpha',
             'Environment :: Console',
             'Intended Audience :: End Users/Desktop',
-            'License :: OSI Approved :: '
-            'GNU General Public License v3 or later (GPLv3+)',
+            'License '
+            ':: OSI Approved '
+            ':: GNU General Public License v3 or later (GPLv3+)',
             'Natural Language :: English',
             'Operating System :: OS Independent',
             'Programming Language :: Python :: 3.7',
             'Topic :: Utilities'
         ],
-        project_urls={'GitHub': 'https://github.com/delvianv/Contacts'},
+        project_urls={'GitHub': 'https://github.com/delvianv/Contacts/'},
         keywords='contacts',
-        py_modules=['contacts'],
+        packages=setuptools.find_packages(),
         python_requires='>=3.7',
         entry_points={
-            'console_scripts': ['contacts=contacts:main']
+            'console_scripts': ['contacts=contacts.contacts:main']
         }
     )

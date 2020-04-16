@@ -12,3 +12,6 @@ build/
 dist/
 *.egg-info/
 *.spec
+
+# A temporary file to store the contacts while developing the app.
+.contacts

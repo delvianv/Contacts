@@ -1,12 +1,18 @@
 # Contacts
 
-## Manage your contacts.
+Store your contacts.
 
-### Installation
+### How to install the app
 
-    ./setup.py install
+**From the [Python Package Index](https://pypi.org/project/Contacts/)**
 
-### Usage
+    pip install Contacts
+
+**From the source code**
+
+`pip install .` or `./setup.py install`
+
+### How to use the app
 
     contacts [OPTIONS] [SEARCH]
 

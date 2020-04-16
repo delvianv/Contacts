@@ -16,16 +16,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""usage: test_contacts.py
-
-TEST CASES
-  About                 Test the information about the app.
-  Action                Test the actions.
-  Load                  Test loading the contacts.
-  Parser                Test the command line parser.
-  Save                  Test saving the contacts.
-  Search                Test searching the contacts.
-"""
+"""usage: test_contacts.py"""
 
 import argparse
 import os
@@ -34,38 +25,18 @@ import unittest
 
 sys.path.insert(0, '..')
 
-import contacts
-
-__author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '1.0'
-
-
-class About(unittest.TestCase):
-    """Test the information about the app.
-
-    TESTS
-      test_author       Test the contact details of the author.
-      test_version      Test the version of the app.
-    """
-
-    def test_author(self):
-        """Test the contact details of the author."""
-        self.assertEqual(__author__, contacts.__author__)
-
-    def test_version(self):
-        """Test the version of the app."""
-        self.assertEqual(__version__, contacts.__version__)
+import contacts as package
+from contacts import contacts
 
 
 class Action(unittest.TestCase):
+
     """Test the actions.
 
     TESTS
-      setUp             Create a command line parser for the tests.
       test_delete       Test deleting a contact.
       test_edit         Test editing a contact.
       test_new          Test creating a contact.
-      tearDown          Delete the test file.
     """
 
     def setUp(self):
@@ -76,37 +47,26 @@ class Action(unittest.TestCase):
         """Test deleting a contact."""
         self.parser.parse_args(['--new', 'name', 'email'])
         self.parser.parse_args(['--delete', 'name'])
-        self.assertNotIn('name', contacts.load_contacts())
+        self.assertNotIn('name', contacts.load())
 
     def test_edit(self):
         """Test editing a contact."""
         self.parser.parse_args(['--new', 'name', 'none'])
         self.parser.parse_args(['--edit', 'name', 'email'])
-        self.assertEqual('email', contacts.load_contacts()['name'])
+        self.assertEqual('email', contacts.load()['name'])
 
     def test_new(self):
         """Test creating a contact."""
         self.parser.parse_args(['--new', 'name', 'email'])
-        self.assertIn('name', contacts.load_contacts())
+        self.assertIn('name', contacts.load())
 
     def tearDown(self):
         """Delete the test file."""
-        os.remove(contacts.CONTACTS_FILE)
-
-
-class File(unittest.TestCase):
-    """Test the name of the contacts file.
-
-    TEST
-      test_file         Test the name of the contacts file.
-    """
-
-    def test_file(self):
-        """Test the name of the contacts file."""
-        self.assertEqual('.test_contacts', contacts.CONTACTS_FILE)
+        os.remove(contacts.FILE)
 
 
 class Load(unittest.TestCase):
+
     """Test loading the contacts.
 
     TEST
@@ -115,17 +75,17 @@ class Load(unittest.TestCase):
 
     def test_load(self):
         """Test loading the contacts."""
-        self.assertIsInstance(contacts.load_contacts(), dict)
+        self.assertIsInstance(contacts.load(), dict)
 
 
 class Parser(unittest.TestCase):
+
     """Test the command line parser.
 
     TESTS
-      setUp             Create a parser to test.
       test_description  Test the description of the app.
-      test_epilog       Test the epilog of the app.
-      test_formatter    Test the help formatter of the app.
+      test_epilog       Test the epilog of the parser.
+      test_formatter    Test the help formatter of the parser.
       test_help         Test the help message of the app.
       test_usage        Test the usage message of the app.
     """
@@ -136,14 +96,14 @@ class Parser(unittest.TestCase):
 
     def test_description(self):
         """Test the description of the app."""
-        self.assertEqual('Manage your contacts.', self.parser.description)
+        self.assertEqual('Store your contacts.', self.parser.description)
 
     def test_epilog(self):
-        """Test the epilog of the app."""
+        """Test the epilog of the parser."""
         self.assertEqual(COPYRIGHT, self.parser.epilog)
 
     def test_formatter(self):
-        """Test the help formatter of the app."""
+        """Test the help formatter of the parser."""
         self.assertIs(
             argparse.RawDescriptionHelpFormatter,
             self.parser.formatter_class
@@ -154,42 +114,53 @@ class Parser(unittest.TestCase):
         self.assertFalse(self.parser.add_help)
 
     def test_usage(self):
-        """Test the usage of the app."""
+        """Test the usage message of the app."""
         self.assertEqual('%(prog)s [OPTIONS] [SEARCH]', self.parser.usage)
 
 
 class Save(unittest.TestCase):
+
     """Test saving the contacts.
 
-    TESTS
+    TEST
       test_save         Test saving the contacts.
-      tearDown          Delete the test file.
     """
 
     def test_save(self):
         """Test saving the contacts."""
-        contacts.save_contacts({})
-        self.assertTrue(os.path.exists(contacts.CONTACTS_FILE))
+        contacts.save({})
+        self.assertTrue(os.path.exists(contacts.FILE))
 
     def tearDown(self):
         """Delete the test file."""
-        os.remove(contacts.CONTACTS_FILE)
+        os.remove(contacts.FILE)
 
 
 class Search(unittest.TestCase):
+
     """Test searching the contacts.
 
-    TESTS
+    TEST
       test_search       Test searching the contacts.
     """
 
     def test_search(self):
         """Test searching the contacts."""
-        self.assertEqual([], contacts.search_contacts(['search']))
+        self.assertEqual([], contacts.search(['search']))
 
 
-contacts.CONTACTS_FILE = '.test_contacts'
-COPYRIGHT = f'''Copyright (C) 2020  {__author__}
+class State(unittest.TestCase):
+
+    """Test the state of the app."""
+
+    def test_state(self):
+        """Test the state of the app."""
+        self.assertTrue(contacts.DEV_MODE)
+
+
+# Store the contacts in a temporary file while testing the app.
+contacts.FILE = '.test_contacts'
+COPYRIGHT = f'''Copyright (C) 2020  {package.__author__}
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under
 certain conditions.  See the GNU General Public License for more

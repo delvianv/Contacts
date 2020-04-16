@@ -1,6 +1,4 @@
-#! python
-
-#  test_build.py: Test setup.py
+#  __main__.py: Run the app.
 #  Copyright (C) 2020  Delvian Valentine <delvian.valentine@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -16,31 +14,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""usage: test_build.py"""
+"""Run the app."""
 
-import sys
-import unittest
-
-sys.path.insert(0, '..')
-
-import setup
-
-
-class LongDescription(unittest.TestCase):
-
-    """Test the long description of the app.
-
-    TEST
-      test_readme       Test reading the README file.
-    """
-
-    def test_readme(self):
-        """Test reading the README file."""
-        with open(setup.README_FILE) as file:
-            self.assertEqual(file.read(), setup.readme())
-
-
-setup.README_FILE = '../README.txt'
+from contacts import contacts
 
 if __name__ == '__main__':
-    unittest.main()
+    contacts.main()

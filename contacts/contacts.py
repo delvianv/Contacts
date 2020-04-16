@@ -1,6 +1,4 @@
-#! python
-
-#  contacts.py: Manage your contacts.
+#  contacts.py: The command line interface
 #  Copyright (C) 2020  Delvian Valentine <delvian.valentine@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -16,9 +14,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-"""usage: contacts.py [OPTIONS] [SEARCH]
+"""usage: contacts [OPTIONS] [SEARCH]
 
-Manage your contacts.
+Store your contacts.
 
 positional arguments:
   SEARCH             search your contacts
@@ -36,8 +34,7 @@ import json
 import os.path
 import sys
 
-__author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '1.0'
+import contacts as package
 
 
 class Delete(argparse.Action):
@@ -45,10 +42,10 @@ class Delete(argparse.Action):
     """Delete a contact."""
 
     def __call__(self, parser, namespace, name, option_string=None):
-        contacts = load_contacts()
+        contacts = load()
         if name in contacts:
             del contacts[name]
-            save_contacts(contacts)
+            save(contacts)
             print(f'{name} was deleted.')
         else:
             print(f'{name} is not a contact.')
@@ -59,11 +56,11 @@ class Edit(argparse.Action):
     """Edit a contact."""
 
     def __call__(self, parser, namespace, values, option_string=None):
-        contacts = load_contacts()
+        contacts = load()
         name, email = values
         if name in contacts:
             contacts[name] = email
-            save_contacts(contacts)
+            save(contacts)
             print(f'{name} was edited.')
         else:
             print(f'{name} is not a contact.')
@@ -74,11 +71,11 @@ class New(argparse.Action):
     """Create a contact."""
 
     def __call__(self, parser, namespace, values, option_string=None):
-        contacts = load_contacts()
+        contacts = load()
         name, email = values
         if name not in contacts:
             contacts[name] = email
-            save_contacts(contacts)
+            save(contacts)
             print(f'{name} was created.')
         else:
             print(f'{name} is already a contact.')
@@ -92,7 +89,7 @@ class Parser(argparse.ArgumentParser):
         argparse.ArgumentParser.__init__(
             self,
             usage='%(prog)s [OPTIONS] [SEARCH]',
-            description='Manage your contacts.',
+            description=package.__doc__,
             epilog=COPYRIGHT,
             formatter_class=argparse.RawDescriptionHelpFormatter,
             add_help=False
@@ -127,29 +124,21 @@ class Parser(argparse.ArgumentParser):
         self.add_argument(
             '--version',
             action='version',
-            version=f'{__version__}',
+            version=f'{package.__version__}',
             help='show the version of the app'
         )
 
 
-CONTACTS_FILE = os.path.join(os.path.expanduser('~'), '.contacts')
-COPYRIGHT = f'''Copyright (C) 2020  {__author__}
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it under
-certain conditions.  See the GNU General Public License for more
-details <https://www.gnu.org/licenses/>.'''
-
-
-def load_contacts():
+def load():
     """Load the contacts.
 
     Exit the app if there was an error.
 
     Return the contacts or an empty dictionary if there are no contacts.
     """
-    if os.path.exists(CONTACTS_FILE):
+    if os.path.exists(FILE):
         try:
-            with open(CONTACTS_FILE) as file:
+            with open(FILE) as file:
                 return json.load(file)
         except OSError as err:
             print('There was an error while loading your contacts.')
@@ -158,45 +147,45 @@ def load_contacts():
         return {}
 
 
-def print_contacts(names):
+def print_(names):
     """Print the contacts.
 
-    ARGUMENTS
+    ARGUMENT
       names             A list of contacts to print.
     """
-    contacts = load_contacts()
+    contacts = load()
     for name in sorted(names):
         print(f'{name}: {contacts[name]}')
 
 
-def save_contacts(contacts):
+def save(contacts):
     """Save the contacts.
 
-    ARGUMENTS
-      contacts          A dictionary containing the contacts.
+    ARGUMENT
+      contacts          The contacts to save.
 
     Exit the app if there was an error.
     """
     try:
-        with open(CONTACTS_FILE, 'w') as file:
+        with open(FILE, 'w') as file:
             json.dump(contacts, file)
     except OSError as err:
         print('There was an error while saving your contacts.')
         sys.exit(err)
 
 
-def search_contacts(search):
+def search(terms):
     """Search the contacts.
 
-    ARGUMENTS
-      search            A list of terms to search for.
+    ARGUMENT
+      terms            A list of terms to search for.
 
     Return a list of contacts that match the search.
     """
-    contacts = load_contacts()
+    contacts = load()
     results = []
     for name in contacts:
-        for term in search:
+        for term in terms:
             if term not in name and term not in contacts[name]:
                 break
         else:
@@ -204,23 +193,23 @@ def search_contacts(search):
     return results
 
 
-def show_contacts(names=None):
+def show(names=None):
     """Show the contacts.
 
-    ARGUMENTS
+    ARGUMENT
       names             A list of contacts to show.
     """
-    contacts = load_contacts()
+    contacts = load()
     if names is not None:
         # Only show the named contacts.
         if names:
-            print_contacts(names)
+            print_(names)
         else:
             print('None of your contacts match your search.')
     else:
         # Show all of the contacts.
         if contacts:
-            print_contacts(list(contacts))
+            print_(list(contacts))
         else:
             print('You do not have any contacts.')
 
@@ -230,12 +219,21 @@ def main():
     args = Parser().parse_args()
     argv = sys.argv[1:]
     if args.search:
-        # Search the contacts if there were search terms on the command line.
-        show_contacts(search_contacts(args.search))
+        # Search the contacts if there are search terms on the command line.
+        show(search(args.search))
     if not argv:
-        # Show the contacts if there were no command line arguments.
-        show_contacts()
+        # Show the contacts if there are no arguments on the command line.
+        show()
 
+
+COPYRIGHT = f'''Copyright (C) 2020  {package.__author__}
+This program comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it under
+certain conditions.  See the GNU General Public License for more
+details <https://www.gnu.org/licenses/>.'''
+# Store the contacts in a temporary file while developing the app.
+DEV_MODE = True
+FILE = '.contacts' if DEV_MODE else os.path.expanduser('~/.contacts')
 
 if __name__ == '__main__':
     main()
