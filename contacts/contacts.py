@@ -133,9 +133,9 @@ def load():
 
     Return the contacts or an empty dictionary if there are no contacts.
     """
-    if os.path.exists(FILE):
+    if os.path.exists(package.CONTACTS_FILE):
         try:
-            with open(FILE) as file:
+            with open(package.CONTACTS_FILE) as file:
                 return json.load(file)
         except OSError as err:
             print('There was an error while loading your contacts.')
@@ -164,7 +164,7 @@ def save(contacts):
     Exit the app if there was an error.
     """
     try:
-        with open(FILE, 'w') as file:
+        with open(package.CONTACTS_FILE, 'w') as file:
             json.dump(contacts, file)
     except OSError as err:
         print('There was an error while saving your contacts.')
@@ -219,10 +219,6 @@ def main():
         # Show the contacts if there are no arguments on the command line.
         show()
 
-
-# Store the contacts in a temporary file while developing the app.
-DEV_MODE = True
-FILE = '.contacts' if DEV_MODE else os.path.expanduser('~/.contacts')
 
 if __name__ == '__main__':
     main()

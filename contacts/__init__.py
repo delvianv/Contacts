@@ -17,8 +17,13 @@
 """Store your contacts."""
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0.dev5'
+__version__ = '2.0.dev6'
 
+import os.path
+
+# Store the contacts in a temporary file while developing the app.
+DEV_MODE = True
+CONTACTS_FILE = '.contacts' if DEV_MODE else os.path.expanduser('~/.contacts')
 COPYRIGHT = f'''Copyright (C) 2020  {__author__}
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under

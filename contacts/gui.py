@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import os.path
 import tkinter as tk
 from tkinter import ttk
 
@@ -53,6 +54,8 @@ class GUI(tk.Tk):
 
     def __init__(self):
         super().__init__()
+        self.mtime = None
+        self.tree = None
         # Window
         self.title('Contacts')
         self.bind('<FocusIn>', lambda e: self.load())
@@ -62,6 +65,7 @@ class GUI(tk.Tk):
         # Contact menu
         contact_menu = tk.Menu(menubar)
         contact_menu.add_command(label='New', command=lambda: New(self))
+        contact_menu.add_command(label='Delete', command=self.delete)
         contact_menu.add_separator()
         contact_menu.add_command(label='Quit', command=self.quit)
         menubar.add_cascade(menu=contact_menu, label='Contact')
@@ -72,17 +76,29 @@ class GUI(tk.Tk):
         self['menu'] = menubar
         self.mainloop()
 
+    def delete(self):
+        """Delete the contacts that are selected."""
+        for item in self.tree.selection():
+            contacts.Parser().parse_args(
+                ['--delete', self.tree.item(item, 'text')]
+            )
+        self.load()
+
     def load(self):
         """Load the contacts."""
+        if os.path.exists(package.CONTACTS_FILE):
+            if (mtime := os.path.getmtime(package.CONTACTS_FILE)) == self.mtime:
+                return
+            self.mtime = mtime
         # Frame
         frame = ttk.Frame(self)
         # Tree
-        tree = ttk.Treeview(frame, columns=['email'])
-        tree.heading('#0', text='Full name')
-        tree.heading('email', text='Email address')
+        self.tree = ttk.Treeview(frame, columns=['email'])
+        self.tree.heading('#0', text='Full name')
+        self.tree.heading('email', text='Email address')
         for name in sorted(people := contacts.load()):
-            tree.insert('', 'end', text=name, values=[people[name]])
-        tree.grid()
+            self.tree.insert('', 'end', text=name, values=[people[name]])
+        self.tree.grid()
         frame.grid(column=0, row=0)
 
 

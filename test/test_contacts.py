@@ -62,7 +62,7 @@ class Action(unittest.TestCase):
 
     def tearDown(self):
         """Delete the test file."""
-        os.remove(contacts.FILE)
+        os.remove(package.CONTACTS_FILE)
 
 
 class Load(unittest.TestCase):
@@ -129,11 +129,11 @@ class Save(unittest.TestCase):
     def test_save(self):
         """Test saving the contacts."""
         contacts.save({})
-        self.assertTrue(os.path.exists(contacts.FILE))
+        self.assertTrue(os.path.exists(package.CONTACTS_FILE))
 
     def tearDown(self):
         """Delete the test file."""
-        os.remove(contacts.FILE)
+        os.remove(package.CONTACTS_FILE)
 
 
 class Search(unittest.TestCase):
@@ -149,17 +149,8 @@ class Search(unittest.TestCase):
         self.assertEqual([], contacts.search(['search']))
 
 
-class State(unittest.TestCase):
-
-    """Test the state of the app."""
-
-    def test_state(self):
-        """Test the state of the app."""
-        self.assertTrue(contacts.DEV_MODE)
-
-
 # Store the contacts in a temporary file while testing the app.
-contacts.FILE = '.test_contacts'
+package.CONTACTS_FILE = '.test_contacts'
 
 if __name__ == '__main__':
     unittest.main()
