@@ -17,13 +17,14 @@
 """Store your contacts."""
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0.dev8'
+__version__ = '2.0b1'
 
 import os.path
 
 # Store the contacts in a temporary file while developing the app.
-DEV_MODE = True
-CONTACTS_FILE = '.contacts' if DEV_MODE else os.path.expanduser('~/.contacts')
+DEV_MODE = False
+PATH = os.path.expanduser(os.path.join('~', '.contacts'))
+CONTACTS_FILE = '.contacts' if DEV_MODE else PATH
 COPYRIGHT = f'''Copyright (C) 2020  {__author__}
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under

@@ -18,6 +18,7 @@
 
 """usage: test_build.py"""
 
+import os.path
 import sys
 import unittest
 
@@ -40,7 +41,7 @@ class LongDescription(unittest.TestCase):
             self.assertEqual(file.read(), setup.readme())
 
 
-setup.README_FILE = '../README.txt'
+setup.README_FILE = os.path.join('..', 'README.txt')
 
 if __name__ == '__main__':
     unittest.main()

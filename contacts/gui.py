@@ -89,7 +89,7 @@ class Filter(tk.Toplevel):
 
     def __init__(self, parent, search):
         super().__init__(parent)
-        self.respond = False
+        self.response = False
         self.search = tk.StringVar()
         self.search.set(search)
         # Window
@@ -117,13 +117,13 @@ class Filter(tk.Toplevel):
 
     def filter(self):
         """Filter the contacts."""
-        self.respond = True
+        self.response = True
         self.destroy()
 
     def wait(self):
         """Wait for the window to close."""
         self.wait_window(self)
-        if self.respond:
+        if self.response:
             return self.search.get()
 
 
@@ -181,11 +181,9 @@ class GUI(tk.Tk):
         self.tree = ttk.Treeview(frame, columns=['email'])
         self.tree.heading('#0', text='Full name')
         self.tree.heading('email', text='Email address')
+        search = self.search
         people = contacts.load()
-        if self.search:
-            names = contacts.search(self.search.split())
-        else:
-            names = list(people)
+        names = contacts.search(search.split()) if search else list(people)
         for name in sorted(names):
             self.tree.insert('', 'end', text=name, values=[people[name]])
         self.tree.grid()

@@ -50,7 +50,7 @@ if __name__ == '__main__':
         author='Delvian Valentine',
         author_email='delvian.valentine@gmail.com',
         classifiers=[
-            'Development Status :: 3 - Alpha',
+            'Development Status :: 4 - Beta',
             'Environment :: Console',
             'Environment :: MacOS X',
             'Environment :: Win32 (MS Windows)',
