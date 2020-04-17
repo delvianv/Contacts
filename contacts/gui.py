@@ -83,17 +83,62 @@ class Contact(tk.Toplevel):
         """Save the contact."""
 
 
+class Filter(tk.Toplevel):
+
+    """The Filter window"""
+
+    def __init__(self, parent, search):
+        super().__init__(parent)
+        self.respond = False
+        self.search = tk.StringVar()
+        self.search.set(search)
+        # Window
+        self.title('Filter')
+        # Frame
+        frame = ttk.Frame(self)
+        # Label
+        ttk.Label(frame, text='Filter:').grid(column=0, row=0)
+        # Entry
+        ttk.Entry(frame, textvariable=self.search).grid(column=1, row=0)
+        # Buttons
+        buttons_frame = ttk.Frame(frame)
+        ttk.Button(
+            buttons_frame,
+            text='Cancel',
+            command=self.destroy
+        ).grid(column=0, row=0)
+        ttk.Button(
+            buttons_frame,
+            text='Filter',
+            command=self.filter
+        ).grid(column=1, row=0)
+        buttons_frame.grid(column=0, row=1, columnspan=2)
+        frame.grid()
+
+    def filter(self):
+        """Filter the contacts."""
+        self.respond = True
+        self.destroy()
+
+    def wait(self):
+        """Wait for the window to close."""
+        self.wait_window(self)
+        if self.respond:
+            return self.search.get()
+
+
 class GUI(tk.Tk):
 
     """The graphical user interface"""
 
     def __init__(self):
         super().__init__()
-        self.mtime = None
+        self.mtime = 0
         self.tree = None
+        self.search = ''
         # Window
         self.title('Contacts')
-        self.bind('<FocusIn>', lambda e: self.load())
+        self.bind('<FocusIn>', lambda e: self.reload())
         # Menubar
         self.option_add('*tearOff', tk.FALSE)
         menubar = tk.Menu(self)
@@ -102,6 +147,8 @@ class GUI(tk.Tk):
         contact_menu.add_command(label='New', command=lambda: New(self))
         contact_menu.add_command(label='Open', command=self.open)
         contact_menu.add_command(label='Delete', command=self.delete)
+        contact_menu.add_separator()
+        contact_menu.add_command(label='Filter...', command=self.filter)
         contact_menu.add_separator()
         contact_menu.add_command(label='Quit', command=self.quit)
         menubar.add_cascade(menu=contact_menu, label='Contact')
@@ -118,21 +165,28 @@ class GUI(tk.Tk):
             contacts.Parser().parse_args(
                 ['--delete', self.tree.item(item, 'text')]
             )
-        self.load()
+        self.reload()
+
+    def filter(self):
+        """Filter the contacts."""
+        if (response := Filter(self, self.search).wait()) is not None:
+            self.search = response
+            self.load()
 
     def load(self):
         """Load the contacts."""
-        if os.path.exists(package.CONTACTS_FILE):
-            if (mtime := os.path.getmtime(package.CONTACTS_FILE)) == self.mtime:
-                return
-            self.mtime = mtime
         # Frame
         frame = ttk.Frame(self)
         # Tree
         self.tree = ttk.Treeview(frame, columns=['email'])
         self.tree.heading('#0', text='Full name')
         self.tree.heading('email', text='Email address')
-        for name in sorted(people := contacts.load()):
+        people = contacts.load()
+        if self.search:
+            names = contacts.search(self.search.split())
+        else:
+            names = list(people)
+        for name in sorted(names):
             self.tree.insert('', 'end', text=name, values=[people[name]])
         self.tree.grid()
         frame.grid(column=0, row=0)
@@ -141,6 +195,15 @@ class GUI(tk.Tk):
         """Open the contacts that are selected."""
         for item in self.tree.selection():
             Open(self, self.tree.item(item, 'text'))
+
+    def reload(self):
+        """Reload the contacts if the file was updated."""
+        if os.path.exists(package.CONTACTS_FILE):
+            if (mtime := os.path.getmtime(package.CONTACTS_FILE)) > self.mtime:
+                self.load()
+                self.mtime = mtime
+        else:
+            self.load()
 
 
 class New(Contact):

@@ -202,7 +202,7 @@ def show(names=None):
         else:
             print('None of your contacts match your search.')
     else:
-        # Show all of the contacts.
+        # Show all the contacts.
         if contacts := load():
             print_(list(contacts))
         else:
