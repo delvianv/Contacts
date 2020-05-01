@@ -26,8 +26,12 @@ FILE = '.contacts'
 def delete(args):
     """Delete a contact."""
     contacts = load()
-    del contacts[args.name]
-    save(contacts)
+    if args.name in contacts:
+        del contacts[args.name]
+        save(contacts)
+        print(f'{args.name} was deleted')
+    else:
+        print(f'{args.name} is not a contact.')
 
 
 def load():
@@ -70,8 +74,12 @@ def main(argv=None):
 def new(args):
     """Store a new contact."""
     contacts = load()
-    contacts[args.name] = args.email
-    save(contacts)
+    if args.name not in contacts:
+        contacts[args.name] = args.email
+        save(contacts)
+        print(f'{args.name} was stored.')
+    else:
+        print(f'{args.name} is already a contact.')
 
 
 def save(contacts):
