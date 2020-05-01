@@ -21,6 +21,13 @@ import json
 FILE = '.contacts'
 
 
+def delete(args):
+    """Delete a contact."""
+    contacts = load()
+    del contacts[args.name]
+    save(contacts)
+
+
 def load():
     """Load the contacts."""
     with open(FILE) as file:
@@ -37,6 +44,10 @@ def main():
     parser_new.add_argument('name')
     parser_new.add_argument('email')
     parser_new.set_defaults(command=new)
+    # The "delete" command parser
+    parser_delete = subparsers.add_parser('delete')
+    parser_delete.add_argument('name')
+    parser_delete.set_defaults(command=delete)
     # Parse the command line.
     args = parser.parse_args()
     if 'command' in args:
@@ -51,6 +62,11 @@ def new(args):
     """Store a new contact."""
     contacts = load()
     contacts[args.name] = args.email
+    save(contacts)
+
+
+def save(contacts):
+    """Save the contacts."""
     with open(FILE, 'w') as file:
         json.dump(contacts, file)
 
