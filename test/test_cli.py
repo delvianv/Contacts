@@ -48,6 +48,23 @@ class Delete(unittest.TestCase):
         os.remove(FILE)
 
 
+class Edit(unittest.TestCase):
+    """Edit a contact."""
+
+    def setUp(self):
+        """Edit a contact."""
+        cli.main(['new', 'name', 'email'])
+        cli.main(['edit', 'name', '@'])
+
+    def test_edit(self):
+        """Test editing a contact."""
+        self.assertEqual(cli.load(), {'name': '@'})
+
+    def tearDown(self):
+        """Remove the file."""
+        os.remove(FILE)
+
+
 class LoadWithoutFile(unittest.TestCase):
     """Load the contacts without a file."""
 

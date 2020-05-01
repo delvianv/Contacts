@@ -34,6 +34,17 @@ def delete(args):
         print(f'{args.name} is not a contact.')
 
 
+def edit(args):
+    """Edit a contact."""
+    contacts = load()
+    if args.name in contacts:
+        contacts[args.name] = args.email
+        save(contacts)
+        print(f'{args.name} was edited.')
+    else:
+        print(f'{args.name} is not a contact.')
+
+
 def load():
     """Load the contacts."""
     if os.path.exists(FILE):
@@ -57,6 +68,11 @@ def main(argv=None):
     parser_new.add_argument('name')
     parser_new.add_argument('email')
     parser_new.set_defaults(command=new)
+    # The "edit" command parser
+    parser_edit = subparsers.add_parser('edit')
+    parser_edit.add_argument('name')
+    parser_edit.add_argument('email')
+    parser_edit.set_defaults(command=edit)
     # The "delete" command parser
     parser_delete = subparsers.add_parser('delete')
     parser_delete.add_argument('name')
