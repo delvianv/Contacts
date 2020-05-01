@@ -15,17 +15,44 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """usage: python -m contacts.cli"""
 
+import argparse
 import json
 
 FILE = '.contacts'
 
 
+def load():
+    """Load the contacts."""
+    with open(FILE) as file:
+        return json.load(file)
+
+
 def main():
     """Run the app."""
-    with open(FILE) as file:
-        contacts = json.load(file)
-    for name in contacts:
-        print(f'{name}: {contacts[name]}')
+    # The command line parser
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+    # The "new" command parser
+    parser_new = subparsers.add_parser('new')
+    parser_new.add_argument('name')
+    parser_new.add_argument('email')
+    parser_new.set_defaults(command=new)
+    # Parse the command line.
+    args = parser.parse_args()
+    if 'command' in args:
+        args.command(args)
+    else:
+        # Show the contacts if no command was given.
+        for name in (contacts := load()):
+            print(f'{name}: {contacts[name]}')
+
+
+def new(args):
+    """Store a new contact."""
+    contacts = load()
+    contacts[args.name] = args.email
+    with open(FILE, 'w') as file:
+        json.dump(contacts, file)
 
 
 if __name__ == '__main__':
