@@ -17,6 +17,7 @@
 
 import argparse
 import json
+import os.path
 
 FILE = '.contacts'
 
@@ -30,11 +31,14 @@ def delete(args):
 
 def load():
     """Load the contacts."""
-    with open(FILE) as file:
-        return json.load(file)
+    if os.path.exists(FILE):
+        with open(FILE) as file:
+            return json.load(file)
+    else:
+        return {}
 
 
-def main():
+def main(argv=None):
     """Run the app."""
     # The command line parser
     parser = argparse.ArgumentParser()
@@ -49,7 +53,7 @@ def main():
     parser_delete.add_argument('name')
     parser_delete.set_defaults(command=delete)
     # Parse the command line.
-    args = parser.parse_args()
+    args = parser.parse_args() if argv is None else parser.parse_args(argv)
     if 'command' in args:
         args.command(args)
     else:
