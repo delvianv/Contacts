@@ -18,6 +18,7 @@
 import argparse
 import json
 import os.path
+import sys
 
 FILE = '.contacts'
 
@@ -32,8 +33,12 @@ def delete(args):
 def load():
     """Load the contacts."""
     if os.path.exists(FILE):
-        with open(FILE) as file:
-            return json.load(file)
+        try:
+            with open(FILE) as file:
+                return json.load(file)
+        except OSError as err:
+            print('There was an error while loading your contacts.')
+            sys.exit(err)
     else:
         return {}
 
@@ -71,8 +76,12 @@ def new(args):
 
 def save(contacts):
     """Save the contacts."""
-    with open(FILE, 'w') as file:
-        json.dump(contacts, file)
+    try:
+        with open(FILE, 'w') as file:
+            json.dump(contacts, file)
+    except OSError as err:
+        print('There was an error while saving your contacts.')
+        sys.exit(err)
 
 
 if __name__ == '__main__':
