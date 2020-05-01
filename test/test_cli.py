@@ -65,11 +65,11 @@ class Edit(unittest.TestCase):
         os.remove(FILE)
 
 
-class LoadWithoutFile(unittest.TestCase):
-    """Load the contacts without a file."""
+class Load(unittest.TestCase):
+    """Load the contacts."""
 
     def test_load(self):
-        """Test loading the contacts without a file."""
+        """Test loading the contacts."""
         self.assertEqual(cli.load(), {})
 
 
@@ -104,6 +104,14 @@ class Save(unittest.TestCase):
     def tearDown(self):
         """Remove the file."""
         os.remove(FILE)
+
+
+class Search(unittest.TestCase):
+    """Search the contacts."""
+
+    def test_search(self):
+        """Test searching the contacts."""
+        self.assertEqual(cli.search('name', {'name': 'email'}), ['name'])
 
 
 if __name__ == '__main__':

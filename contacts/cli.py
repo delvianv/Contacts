@@ -62,6 +62,7 @@ def main(argv=None):
     """Run the app."""
     # The command line parser
     parser = argparse.ArgumentParser()
+    parser.add_argument('--search')
     subparsers = parser.add_subparsers()
     # The "new" command parser
     parser_new = subparsers.add_parser('new')
@@ -83,8 +84,13 @@ def main(argv=None):
         args.command(args)
     else:
         # Show the contacts if no command was given.
-        for name in (contacts := load()):
-            print(f'{name}: {contacts[name]}')
+        contacts = load()
+        names = search(args.search, contacts) if args.search else list(contacts)
+        if names:
+            for name in names:
+                print(f'{name}: {contacts[name]}')
+        else:
+            print('There are no contacts to show.')
 
 
 def new(args):
@@ -96,6 +102,15 @@ def new(args):
         print(f'{args.name} was stored.')
     else:
         print(f'{args.name} is already a contact.')
+
+
+def search(arg, contacts):
+    """Search the contacts."""
+    names = []
+    for name in contacts:
+        if arg in name or arg in contacts[name]:
+            names.append(name)
+    return names
 
 
 def save(contacts):
