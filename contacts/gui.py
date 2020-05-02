@@ -252,16 +252,22 @@ class App(tk.Tk):
         # The "Contact" menu
         menu_contact = tk.Menu(menubar)
         menu_contact.add_command(label='New', command=lambda: New(self))
+        menu_contact.add_command(label='Delete', command=self.delete)
         menubar.add_cascade(menu=menu_contact, label='Contact')
         self['menu'] = menubar
         # The frame
         frame = ttk.Frame(self)
         # The tree
-        tree = ttk.Treeview(frame, columns=['email'])
+        self.tree = ttk.Treeview(frame, columns=['email'])
         for name in (people := contacts.load()):
-            tree.insert('', 'end', text=name, values=[people[name]])
-        tree.grid()
+            self.tree.insert('', 'end', text=name, values=[people[name]])
+        self.tree.grid()
         frame.grid()
+
+    def delete(self):
+        """Delete the selected contacts."""
+        for item in self.tree.selection():
+            cli.main(['delete', self.tree.item(item, 'text')])
 
 
 class New(tk.Toplevel):
