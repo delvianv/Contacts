@@ -33,6 +33,12 @@ def load():
         return {}
 
 
+def save(contacts):
+    """Save the contacts."""
+    with open(FILE, 'w') as file:
+        json.dump(contacts, file)
+
+
 # Store the contacts in a temporary file while developing the app.
 DEV_MODE = False
 PATH = os.path.expanduser(os.path.join('~', '.contacts'))

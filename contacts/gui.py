@@ -20,7 +20,6 @@ import tkinter as tk
 from tkinter import ttk
 
 import contacts
-from contacts import cli
 
 
 # class About(tk.Toplevel):
@@ -247,6 +246,7 @@ class App(tk.Tk):
     def __init__(self):
         """Initialise the app."""
         super().__init__()
+        self.people = {}
         self.mtime = 0
         self.bind('<FocusIn>', lambda e: self.load())
         # The menubar
@@ -254,67 +254,87 @@ class App(tk.Tk):
         menubar = tk.Menu(self)
         # The "Contact" menu
         menu_contact = tk.Menu(menubar)
-        menu_contact.add_command(label='New', command=lambda: New(self))
+        menu_contact.add_command(
+            label='New',
+            command=lambda: New(self, self.people)
+        )
+        menu_contact.add_command(label='Open', command=self.open)
         menu_contact.add_command(label='Delete', command=self.delete)
         menubar.add_cascade(menu=menu_contact, label='Contact')
         self['menu'] = menubar
         # The frame
         self.frame = ttk.Frame(self)
         # The tree
-        self.tree = None
+        self.tree = ttk.Treeview(self.frame)
         self.frame.grid()
 
     def delete(self):
         """Delete the selected contacts."""
         for item in self.tree.selection():
-            cli.main(['delete', self.tree.item(item, 'text')])
+            del self.people[self.tree.item(item, 'text')]
+        contacts.save(self.people)
         self.load()
 
     def load(self):
         """Load the contacts."""
         if os.path.exists(contacts.FILE):
             if (mtime := os.path.getmtime(contacts.FILE)) > self.mtime:
+                self.people = contacts.load()
                 # The tree
                 self.tree = ttk.Treeview(self.frame, columns=['email'])
-                for name in (people := contacts.load()):
+                for name in self.people:
                     self.tree.insert(
                         '',
                         'end',
                         text=name,
-                        values=[people[name]]
+                        values=[self.people[name]]
                     )
                 self.tree.grid(column=0, row=0)
                 self.mtime = mtime
 
+    def open(self):
+        """Open the selected contacts."""
+        for item in self.tree.selection():
+            Contact(self, self.people, self.tree.item(item, 'text'))
 
-class New(tk.Toplevel):
-    """The 'New Contact' window"""
 
-    def __init__(self, parent):
-        """Initialise the 'New Contact' window."""
+class Contact(tk.Toplevel):
+    """The 'Contact' window"""
+
+    def __init__(self, parent, people, name=None):
+        """Initialise the 'Contact' window."""
         super().__init__(parent)
+        self.people = people
         self.name = tk.StringVar()
         self.email = tk.StringVar()
+        if name is not None:
+            self.name.set(name)
+            self.email.set(people[name])
         # The frame
         frame = ttk.Frame(self)
         # Labels
-        ttk.Label(frame, text='Name:').grid(column=0, row=0)
-        ttk.Label(frame, text='Email:').grid(column=0, row=1)
+        ttk.Label(self, text='Name:').grid(column=0, row=0)
+        ttk.Label(self, text='Email:').grid(column=0, row=1)
         # Entries
-        ttk.Entry(frame, textvariable=self.name).grid(column=1, row=0)
-        ttk.Entry(frame, textvariable=self.email).grid(column=1, row=1)
+        ttk.Entry(self, textvariable=self.name).grid(column=1, row=0)
+        ttk.Entry(self, textvariable=self.email).grid(column=1, row=1)
         # The button
-        ttk.Button(
-            frame,
-            text='Save',
-            command=self.save
-        ).grid(column=1, row=2)
+        ttk.Button(self, text='Save', command=self.save).grid(column=1, row=2)
         frame.grid()
 
     def save(self):
-        """Store the new contact."""
-        cli.main(['new', self.name.get(), self.email.get()])
+        """Update the contact."""
+        self.people[self.name.get()] = self.email.get()
+        contacts.save(self.people)
         self.destroy()
+
+
+class New(Contact):
+    """The 'New Contact' window"""
+
+    def __init__(self, parent, people):
+        """Initialise the 'New Contact' window."""
+        super().__init__(parent, people)
 
 
 def main():

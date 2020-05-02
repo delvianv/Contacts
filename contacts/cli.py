@@ -16,7 +16,6 @@
 """usage: python -m contacts.cli [OPTION] {COMMAND}"""
 
 import argparse
-import json
 import sys
 
 import contacts
@@ -35,7 +34,7 @@ def delete(args):
     if args.name in people:
         del people[args.name]
         save(people)
-        print(f'{args.name} was deleted')
+        print(f'{args.name} was deleted.')
     else:
         print(f'{args.name} is not a contact.')
 
@@ -172,8 +171,7 @@ def search(arg, people):
 def save(people):
     """Save the contacts."""
     try:
-        with open(FILE_CONTACTS, 'w') as file:
-            json.dump(people, file)
+        contacts.save(people)
     except OSError as err:
         print('There was an error while saving your contacts.')
         sys.exit(err)
