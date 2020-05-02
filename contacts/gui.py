@@ -15,6 +15,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """usage: python -m contacts.gui"""
 
+import os.path
 import tkinter as tk
 from tkinter import ttk
 
@@ -246,6 +247,8 @@ class App(tk.Tk):
     def __init__(self):
         """Initialise the app."""
         super().__init__()
+        self.mtime = 0
+        self.bind('<FocusIn>', lambda e: self.load())
         # The menubar
         self.option_add('*tearOff', tk.FALSE)
         menubar = tk.Menu(self)
@@ -256,18 +259,32 @@ class App(tk.Tk):
         menubar.add_cascade(menu=menu_contact, label='Contact')
         self['menu'] = menubar
         # The frame
-        frame = ttk.Frame(self)
+        self.frame = ttk.Frame(self)
         # The tree
-        self.tree = ttk.Treeview(frame, columns=['email'])
-        for name in (people := contacts.load()):
-            self.tree.insert('', 'end', text=name, values=[people[name]])
-        self.tree.grid()
-        frame.grid()
+        self.tree = None
+        self.frame.grid()
 
     def delete(self):
         """Delete the selected contacts."""
         for item in self.tree.selection():
             cli.main(['delete', self.tree.item(item, 'text')])
+        self.load()
+
+    def load(self):
+        """Load the contacts."""
+        if os.path.exists(contacts.FILE):
+            if (mtime := os.path.getmtime(contacts.FILE)) > self.mtime:
+                # The tree
+                self.tree = ttk.Treeview(self.frame, columns=['email'])
+                for name in (people := contacts.load()):
+                    self.tree.insert(
+                        '',
+                        'end',
+                        text=name,
+                        values=[people[name]]
+                    )
+                self.tree.grid(column=0, row=0)
+                self.mtime = mtime
 
 
 class New(tk.Toplevel):
