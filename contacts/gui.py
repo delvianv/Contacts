@@ -248,7 +248,9 @@ class App(tk.Tk):
         super().__init__()
         self.people = {}
         self.mtime = 0
-        self.bind('<FocusIn>', lambda e: self.load())
+        self.filter = ''
+        # Events
+        self.bind('<FocusIn>', lambda e: self.reload())
         # The menubar
         self.option_add('*tearOff', tk.FALSE)
         menubar = tk.Menu(self)
@@ -256,16 +258,21 @@ class App(tk.Tk):
         menu_contact = tk.Menu(menubar)
         menu_contact.add_command(
             label='New',
-            command=lambda: New(self, self.people)
+            command=lambda: Contact(self)
         )
         menu_contact.add_command(label='Open', command=self.open)
         menu_contact.add_command(label='Delete', command=self.delete)
+        menu_contact.add_command(
+            label='Filter...',
+            command=lambda: Filter(self)
+        )
         menubar.add_cascade(menu=menu_contact, label='Contact')
         self['menu'] = menubar
         # The frame
         self.frame = ttk.Frame(self)
         # The tree
         self.tree = ttk.Treeview(self.frame)
+        self.load()
         self.frame.grid()
 
     def delete(self):
@@ -277,39 +284,46 @@ class App(tk.Tk):
 
     def load(self):
         """Load the contacts."""
-        if os.path.exists(contacts.FILE):
-            if (mtime := os.path.getmtime(contacts.FILE)) > self.mtime:
-                self.people = contacts.load()
-                # The tree
-                self.tree = ttk.Treeview(self.frame, columns=['email'])
-                for name in self.people:
-                    self.tree.insert(
-                        '',
-                        'end',
-                        text=name,
-                        values=[self.people[name]]
-                    )
-                self.tree.grid(column=0, row=0)
-                self.mtime = mtime
+        self.people = contacts.load()
+        # The tree
+        self.tree = ttk.Treeview(self.frame, columns=['email'])
+        if self.filter:
+            names = contacts.search(self.filter, self.people)
+        else:
+            names = list(self.people)
+        for name in names:
+            self.tree.insert(
+                '',
+                'end',
+                text=name,
+                values=[self.people[name]]
+            )
+        self.tree.grid(column=0, row=0)
 
     def open(self):
         """Open the selected contacts."""
         for item in self.tree.selection():
-            Contact(self, self.people, self.tree.item(item, 'text'))
+            Contact(self, self.tree.item(item, 'text'))
+
+    def reload(self):
+        """Reload the contacts."""
+        if os.path.exists(contacts.FILE):
+            if (mtime := os.path.getmtime(contacts.FILE)) > self.mtime:
+                self.load()
+                self.mtime = mtime
 
 
 class Contact(tk.Toplevel):
     """The 'Contact' window"""
 
-    def __init__(self, parent, people, name=None):
+    def __init__(self, parent, name=None):
         """Initialise the 'Contact' window."""
         super().__init__(parent)
-        self.people = people
         self.name = tk.StringVar()
         self.email = tk.StringVar()
         if name is not None:
             self.name.set(name)
-            self.email.set(people[name])
+            self.email.set(parent.people[name])
         # The frame
         frame = ttk.Frame(self)
         # Labels
@@ -324,17 +338,38 @@ class Contact(tk.Toplevel):
 
     def save(self):
         """Update the contact."""
-        self.people[self.name.get()] = self.email.get()
-        contacts.save(self.people)
+        self.master.people[self.name.get()] = self.email.get()
+        contacts.save(self.master.people)
         self.destroy()
 
 
-class New(Contact):
-    """The 'New Contact' window"""
+class Filter(tk.Toplevel):
+    """The 'Filter' window"""
 
-    def __init__(self, parent, people):
-        """Initialise the 'New Contact' window."""
-        super().__init__(parent, people)
+    def __init__(self, parent):
+        """Initialise the 'Filter' window."""
+        super().__init__(parent)
+        self.search = tk.StringVar()
+        self.search.set(parent.filter)
+        # The frame
+        frame = ttk.Frame(self)
+        # The label
+        ttk.Label(frame, text='Filter:').grid(column=0, row=0)
+        # The entry
+        ttk.Entry(frame, textvariable=self.search).grid(column=1, row=0)
+        # The button
+        ttk.Button(
+            frame,
+            text='Filter',
+            command=self.filter
+        ).grid(column=1, row=1)
+        frame.grid()
+
+    def filter(self):
+        """Filter the contacts."""
+        self.master.filter = self.search.get()
+        self.master.load()
+        self.destroy()
 
 
 def main():

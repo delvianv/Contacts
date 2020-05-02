@@ -26,9 +26,8 @@ import unittest
 
 sys.path.insert(0, '..')
 
+import contacts
 from contacts import cli
-
-FILE_CONTACTS = '.contacts'
 
 
 class Delete(unittest.TestCase):
@@ -45,7 +44,7 @@ class Delete(unittest.TestCase):
 
     def tearDown(self):
         """Remove the file."""
-        os.remove(FILE_CONTACTS)
+        os.remove(contacts.FILE)
 
 
 class Edit(unittest.TestCase):
@@ -62,7 +61,7 @@ class Edit(unittest.TestCase):
 
     def tearDown(self):
         """Remove the file."""
-        os.remove(FILE_CONTACTS)
+        os.remove(contacts.FILE)
 
 
 class Load(unittest.TestCase):
@@ -86,7 +85,7 @@ class New(unittest.TestCase):
 
     def tearDown(self):
         """Remove the file."""
-        os.remove(FILE_CONTACTS)
+        os.remove(contacts.FILE)
 
 
 class Save(unittest.TestCase):
@@ -103,15 +102,7 @@ class Save(unittest.TestCase):
 
     def tearDown(self):
         """Remove the file."""
-        os.remove(FILE_CONTACTS)
-
-
-class Search(unittest.TestCase):
-    """Search the contacts."""
-
-    def test_search(self):
-        """Test searching the contacts."""
-        self.assertEqual(['name'], cli.search('name', {'name': 'email'}))
+        os.remove(contacts.FILE)
 
 
 if __name__ == '__main__':

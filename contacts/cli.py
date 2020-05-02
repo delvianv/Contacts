@@ -25,7 +25,6 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under
 certain conditions.  See the GNU General Public License for more
 details <https://www.gnu.org/licenses/>.'''
-FILE_CONTACTS = '.contacts'
 
 
 def delete(args):
@@ -140,7 +139,10 @@ def main(argv=None):
     else:
         # Show the contacts.
         people = load()
-        names = search(args.search, people) if args.search else list(people)
+        if args.search:
+            names = contacts.search(args.search, people)
+        else:
+            names = list(people)
         if names:
             for name in sorted(names):
                 print(f'{name}: {people[name]}')
@@ -157,15 +159,6 @@ def new(args):
         print(f'{args.name} was stored.')
     else:
         print(f'{args.name} is already a contact.')
-
-
-def search(arg, people):
-    """Search the contacts."""
-    names = []
-    for name in people:
-        if arg in name or arg in people[name]:
-            names.append(name)
-    return names
 
 
 def save(people):

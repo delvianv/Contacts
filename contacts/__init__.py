@@ -39,6 +39,15 @@ def save(contacts):
         json.dump(contacts, file)
 
 
+def search(arg, contacts):
+    """Search the contacts."""
+    names = []
+    for name in contacts:
+        if arg in name or arg in contacts[name]:
+            names.append(name)
+    return names
+
+
 # Store the contacts in a temporary file while developing the app.
 DEV_MODE = False
 PATH = os.path.expanduser(os.path.join('~', '.contacts'))
