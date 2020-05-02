@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""usage: python -m contacts.gui"""
 
 import os.path
 import tkinter as tk
@@ -242,7 +243,18 @@ class Open(Contact):
 
 def main():
     """Run the app."""
-    GUI()
+    # The main window
+    app = tk.Tk()
+    # The menubar
+    app.option_add('*tearOff', tk.FALSE)
+    menubar = tk.Menu(app)
+    # The "Contact" menu
+    menu_contact = tk.Menu(menubar)
+    menu_contact.add_command(label='Quit', command=app.quit)
+    menubar.add_cascade(menu=menu_contact, label='Contact')
+    app['menu'] = menubar
+    # Run the app.
+    app.mainloop()
 
 
 if __name__ == '__main__':
