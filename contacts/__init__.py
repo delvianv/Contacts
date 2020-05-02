@@ -46,14 +46,3 @@ def search(arg, contacts):
         if arg in name or arg in contacts[name]:
             names.append(name)
     return names
-
-
-# Store the contacts in a temporary file while developing the app.
-DEV_MODE = False
-PATH = os.path.expanduser(os.path.join('~', '.contacts'))
-CONTACTS_FILE = '.contacts' if DEV_MODE else PATH
-COPYRIGHT = f'''Copyright (C) 2020  {__author__}
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it under
-certain conditions.  See the GNU General Public License for more
-details <https://www.gnu.org/licenses/>.'''

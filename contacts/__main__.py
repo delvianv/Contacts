@@ -13,10 +13,8 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 """Run the app."""
 
 from contacts import gui
 
-if __name__ == '__main__':
-    gui.main()
+gui.main()
