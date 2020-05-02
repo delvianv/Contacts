@@ -143,7 +143,7 @@ def main(argv=None):
         people = load()
         names = search(args.search, people) if args.search else list(people)
         if names:
-            for name in names:
+            for name in sorted(names):
                 print(f'{name}: {people[name]}')
         else:
             print('There are no contacts to show.')
