@@ -20,17 +20,7 @@ Store your contacts.
 
 **The command line interface**
 
-    contacts [OPTIONS] [SEARCH]
-
-    positional arguments:
-      SEARCH             search your contacts
-
-    optional arguments:
-      --new NAME EMAIL   create a contact
-      --edit NAME EMAIL  edit a contact
-      --delete NAME      delete a contact
-      --help             show this message
-      --version          show the version of the program
+    contacts [OPTION] {COMMAND}
 
 ### License
 

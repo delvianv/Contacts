@@ -27,7 +27,7 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under
 certain conditions.  See the GNU General Public License for more
 details <https://www.gnu.org/licenses/>.'''
-FILE = '.contacts'
+FILE_CONTACTS = '.contacts'
 
 
 def delete(args):
@@ -54,9 +54,9 @@ def edit(args):
 
 def load():
     """Load the contacts."""
-    if os.path.exists(FILE):
+    if os.path.exists(FILE_CONTACTS):
         try:
-            with open(FILE) as file:
+            with open(FILE_CONTACTS) as file:
                 return json.load(file)
         except OSError as err:
             print('There was an error while loading your contacts.')
@@ -177,7 +177,7 @@ def search(arg, people):
 def save(people):
     """Save the contacts."""
     try:
-        with open(FILE, 'w') as file:
+        with open(FILE_CONTACTS, 'w') as file:
             json.dump(people, file)
     except OSError as err:
         print('There was an error while saving your contacts.')

@@ -28,7 +28,7 @@ sys.path.insert(0, '..')
 
 from contacts import cli
 
-FILE = '.contacts'
+FILE_CONTACTS = '.contacts'
 
 
 class Delete(unittest.TestCase):
@@ -41,11 +41,11 @@ class Delete(unittest.TestCase):
 
     def test_delete(self):
         """Test deleting a contact."""
-        self.assertEqual(cli.load(), {})
+        self.assertEqual({}, cli.load())
 
     def tearDown(self):
         """Remove the file."""
-        os.remove(FILE)
+        os.remove(FILE_CONTACTS)
 
 
 class Edit(unittest.TestCase):
@@ -58,11 +58,11 @@ class Edit(unittest.TestCase):
 
     def test_edit(self):
         """Test editing a contact."""
-        self.assertEqual(cli.load(), {'name': '@'})
+        self.assertEqual({'name': '@'}, cli.load())
 
     def tearDown(self):
         """Remove the file."""
-        os.remove(FILE)
+        os.remove(FILE_CONTACTS)
 
 
 class Load(unittest.TestCase):
@@ -70,7 +70,7 @@ class Load(unittest.TestCase):
 
     def test_load(self):
         """Test loading the contacts."""
-        self.assertEqual(cli.load(), {})
+        self.assertEqual({}, cli.load())
 
 
 class New(unittest.TestCase):
@@ -82,11 +82,11 @@ class New(unittest.TestCase):
 
     def test_new(self):
         """Test storing a new contact."""
-        self.assertEqual(cli.load(), {'name': 'email'})
+        self.assertEqual({'name': 'email'}, cli.load())
 
     def tearDown(self):
         """Remove the file."""
-        os.remove(FILE)
+        os.remove(FILE_CONTACTS)
 
 
 class Save(unittest.TestCase):
@@ -99,11 +99,11 @@ class Save(unittest.TestCase):
 
     def test_save(self):
         """Test saving the contacts."""
-        self.assertEqual(cli.load(), self.contacts)
+        self.assertEqual(self.contacts, cli.load())
 
     def tearDown(self):
         """Remove the file."""
-        os.remove(FILE)
+        os.remove(FILE_CONTACTS)
 
 
 class Search(unittest.TestCase):
@@ -111,7 +111,7 @@ class Search(unittest.TestCase):
 
     def test_search(self):
         """Test searching the contacts."""
-        self.assertEqual(cli.search('name', {'name': 'email'}), ['name'])
+        self.assertEqual(['name'], cli.search('name', {'name': 'email'}))
 
 
 if __name__ == '__main__':

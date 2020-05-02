@@ -15,35 +15,29 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 """usage: setup.py build|install"""
 
 import setuptools
 import sys
 
-import contacts as package
+import contacts
 
 
 def readme():
-    """Read the README file.
-
-    Return the README file.
-    """
+    """Read the README file."""
     try:
-        with open(README_FILE) as file:
+        with open('README.txt') as file:
             return file.read()
     except OSError as err:
-        print(f'There was an error while opening {README_FILE}')
+        print('There was an error while reading the README file.')
         sys.exit(err)
 
-
-README_FILE = 'README.txt'
 
 if __name__ == '__main__':
     setuptools.setup(
         name='Contacts',
-        version=f'{package.__version__}',
-        description=package.__doc__,
+        version=contacts.__version__,
+        description=contacts.__doc__,
         long_description=readme(),
         long_description_content_type='text/markdown',
         url='https://pypi.org/project/Contacts/',
@@ -69,7 +63,7 @@ if __name__ == '__main__':
         packages=setuptools.find_packages(),
         python_requires='>=3.8',
         entry_points={
-            'console_scripts': ['contacts=contacts.contacts:main'],
+            'console_scripts': ['contacts=contacts.cli:main'],
             'gui_scripts': ['contacts_gui=contacts.gui:main']
         }
     )
