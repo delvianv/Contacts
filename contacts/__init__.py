@@ -1,4 +1,4 @@
-#  __init__.py: The package
+#  __init__.py: Store your contacts.
 #  Copyright (C) 2020  Delvian Valentine <delvian.valentine@gmail.com>
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -13,11 +13,10 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 """Store your contacts."""
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0b1'
+__version__ = '2.0b2'
 
 import os.path
 
