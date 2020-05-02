@@ -19,6 +19,7 @@ import tkinter as tk
 from tkinter import ttk
 
 import contacts
+from contacts import cli
 
 
 # class About(tk.Toplevel):
@@ -250,7 +251,7 @@ class App(tk.Tk):
         menubar = tk.Menu(self)
         # The "Contact" menu
         menu_contact = tk.Menu(menubar)
-        menu_contact.add_command(label='Quit', command=self.quit)
+        menu_contact.add_command(label='New', command=lambda: New(self))
         menubar.add_cascade(menu=menu_contact, label='Contact')
         self['menu'] = menubar
         # The frame
@@ -261,6 +262,36 @@ class App(tk.Tk):
             tree.insert('', 'end', text=name, values=[people[name]])
         tree.grid()
         frame.grid()
+
+
+class New(tk.Toplevel):
+    """The 'New Contact' window"""
+
+    def __init__(self, parent):
+        """Initialise the 'New Contact' window."""
+        super().__init__(parent)
+        self.name = tk.StringVar()
+        self.email = tk.StringVar()
+        # The frame
+        frame = ttk.Frame(self)
+        # Labels
+        ttk.Label(frame, text='Name:').grid(column=0, row=0)
+        ttk.Label(frame, text='Email:').grid(column=0, row=1)
+        # Entries
+        ttk.Entry(frame, textvariable=self.name).grid(column=1, row=0)
+        ttk.Entry(frame, textvariable=self.email).grid(column=1, row=1)
+        # The button
+        ttk.Button(
+            frame,
+            text='Save',
+            command=self.save
+        ).grid(column=1, row=2)
+        frame.grid()
+
+    def save(self):
+        """Store the new contact."""
+        cli.main(['new', self.name.get(), self.email.get()])
+        self.destroy()
 
 
 def main():
