@@ -17,7 +17,6 @@
 
 import argparse
 import json
-import os.path
 import sys
 
 import contacts
@@ -54,15 +53,11 @@ def edit(args):
 
 def load():
     """Load the contacts."""
-    if os.path.exists(FILE_CONTACTS):
-        try:
-            with open(FILE_CONTACTS) as file:
-                return json.load(file)
-        except OSError as err:
-            print('There was an error while loading your contacts.')
-            sys.exit(err)
-    else:
-        return {}
+    try:
+        return contacts.load()
+    except OSError as err:
+        print('There was an error while loading your contacts.')
+        sys.exit(err)
 
 
 def main(argv=None):

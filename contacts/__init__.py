@@ -18,7 +18,20 @@
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
 __version__ = '2.0b2'
 
+import json
 import os.path
+
+FILE = '.contacts'
+
+
+def load():
+    """Load the contacts."""
+    if os.path.exists(FILE):
+        with open(FILE) as file:
+            return json.load(file)
+    else:
+        return {}
+
 
 # Store the contacts in a temporary file while developing the app.
 DEV_MODE = False
