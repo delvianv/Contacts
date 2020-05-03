@@ -28,14 +28,28 @@ details <https://www.gnu.org/licenses/>.'''
 
 
 def delete(args):
-    """Delete a contact."""
+    """Delete contacts."""
     people = load()
-    if args.name in people:
-        del people[args.name]
+    modified = False
+    # Delete the named contacts.
+    names = (
+        contacts.search(args.search, people) if args.search else args.names
+    )
+    for name in names:
+        try:
+            del people[name]
+        except KeyError:
+            print(f'{name} is not a contact.')
+        else:
+            modified = True
+            print(f'{name} was deleted.')
+    # Delete all the contacts.
+    if args.all:
+        people.clear()
+        modified = True
+        print('All your contacts were deleted.')
+    if modified:
         save(people)
-        print(f'{args.name} was deleted.')
-    else:
-        print(f'{args.name} is not a contact.')
 
 
 def load():
@@ -60,7 +74,7 @@ def main(argv=None):
     )
     parser.add_argument(
         '--search',
-        help='search your contacts'
+        help='show your contacts that match the search'
     )
     parser.add_argument(
         '-h',
@@ -81,7 +95,7 @@ def main(argv=None):
     # The "new" command parser
     parser_new = subparsers.add_parser(
         'new',
-        usage='new [-h] name email',
+        usage='new [OPTION] name email',
         description='Store a new contact.',
         help='store a new contact',
         add_help=False
@@ -104,7 +118,7 @@ def main(argv=None):
     # The "update" command parser
     parser_update = subparsers.add_parser(
         'update',
-        usage='update [-h] name email',
+        usage='update [OPTION] name email',
         description='Update a contact.',
         help='update a contact',
         add_help=False
@@ -127,14 +141,26 @@ def main(argv=None):
     # The "delete" command parser
     parser_delete = subparsers.add_parser(
         'delete',
-        usage='delete [-h] name',
-        description='Delete a contact.',
-        help='delete a contact',
+        aliases=['del'],
+        usage='delete [OPTION] [names]',
+        description='Delete your contacts.',
+        help='delete your contacts',
         add_help=False
     )
     parser_delete.add_argument(
-        'name',
-        help='the name of the contact'
+        'names',
+        nargs='*',
+        help='the names of your contacts'
+    )
+    parser_delete_group = parser_delete.add_mutually_exclusive_group()
+    parser_delete_group.add_argument(
+        '--search',
+        help='delete your contacts that match the search'
+    )
+    parser_delete_group.add_argument(
+        '--all',
+        action='store_true',
+        help='delete all your contacts'
     )
     parser_delete.add_argument(
         '-h',

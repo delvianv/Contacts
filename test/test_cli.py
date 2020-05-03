@@ -31,16 +31,16 @@ from contacts import cli
 
 
 class Delete(unittest.TestCase):
-    """Delete a contact."""
+    """Delete contacts."""
 
     def setUp(self):
-        """Delete a contact."""
+        """Delete contacts."""
         contacts.FILE = '.contacts'
         cli.main(['new', 'name', 'email'])
         cli.main(['delete', 'name'])
 
     def test_delete(self):
-        """Test deleting a contact."""
+        """Test deleting contacts."""
         self.assertEqual({}, cli.load())
 
     def tearDown(self):
