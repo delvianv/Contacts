@@ -48,24 +48,6 @@ class Delete(unittest.TestCase):
         os.remove(contacts.FILE)
 
 
-class Edit(unittest.TestCase):
-    """Edit a contact."""
-
-    def setUp(self):
-        """Edit a contact."""
-        contacts.FILE = '.contacts'
-        cli.main(['new', 'name', 'email'])
-        cli.main(['edit', 'name', '@'])
-
-    def test_edit(self):
-        """Test editing a contact."""
-        self.assertEqual({'name': '@'}, cli.load())
-
-    def tearDown(self):
-        """Remove the file."""
-        os.remove(contacts.FILE)
-
-
 class New(unittest.TestCase):
     """Store a new contact."""
 
@@ -77,6 +59,24 @@ class New(unittest.TestCase):
     def test_new(self):
         """Test storing a new contact."""
         self.assertEqual({'name': 'email'}, cli.load())
+
+    def tearDown(self):
+        """Remove the file."""
+        os.remove(contacts.FILE)
+
+
+class Update(unittest.TestCase):
+    """Update a contact."""
+
+    def setUp(self):
+        """Edit a contact."""
+        contacts.FILE = '.contacts'
+        cli.main(['new', 'name', 'email'])
+        cli.main(['update', 'name', '@'])
+
+    def test_edit(self):
+        """Test editing a contact."""
+        self.assertEqual({'name': '@'}, cli.load())
 
     def tearDown(self):
         """Remove the file."""

@@ -38,17 +38,6 @@ def delete(args):
         print(f'{args.name} is not a contact.')
 
 
-def edit(args):
-    """Edit a contact."""
-    people = load()
-    if args.name in people:
-        people[args.name] = args.email
-        save(people)
-        print(f'{args.name} was edited.')
-    else:
-        print(f'{args.name} is not a contact.')
-
-
 def load():
     """Load the contacts."""
     try:
@@ -112,29 +101,29 @@ def main(argv=None):
         help='show this message'
     )
     parser_new.set_defaults(command=new)
-    # The "edit" command parser
-    parser_edit = subparsers.add_parser(
-        'edit',
-        usage='edit [-h] name email',
-        description='Edit a contact.',
-        help='edit a contact',
+    # The "update" command parser
+    parser_update = subparsers.add_parser(
+        'update',
+        usage='update [-h] name email',
+        description='Update a contact.',
+        help='update a contact',
         add_help=False
     )
-    parser_edit.add_argument(
+    parser_update.add_argument(
         'name',
         help='the name of the contact'
     )
-    parser_edit.add_argument(
+    parser_update.add_argument(
         'email',
         help='the email address of the contact'
     )
-    parser_edit.add_argument(
+    parser_update.add_argument(
         '-h',
         '--help',
         action='help',
         help='show this message'
     )
-    parser_edit.set_defaults(command=edit)
+    parser_update.set_defaults(command=update)
     # The "delete" command parser
     parser_delete = subparsers.add_parser(
         'delete',
@@ -191,6 +180,17 @@ def save(people):
     except OSError as err:
         print('There was an error while saving your contacts.')
         sys.exit(err)
+
+
+def update(args):
+    """Update a contact."""
+    people = load()
+    if args.name in people:
+        people[args.name] = args.email
+        save(people)
+        print(f'{args.name} was updated.')
+    else:
+        print(f'{args.name} is not a contact.')
 
 
 if __name__ == '__main__':

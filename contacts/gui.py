@@ -40,7 +40,7 @@ class App(tk.Tk):
         menu_contact = tk.Menu(menubar)
         menu_contact.add_command(
             label='New',
-            command=lambda: Contact(self)
+            command=lambda: New(self)
         )
         menu_contact.add_command(
             label='Open',
@@ -99,7 +99,7 @@ class App(tk.Tk):
     def open(self):
         """Open the selected contacts."""
         for item in self.tree.selection():
-            Contact(self, self.tree.item(item, 'text'))
+            Update(self, self.tree.item(item, 'text'))
 
     def reload(self):
         """Reload the contacts."""
@@ -132,28 +132,23 @@ class App(tk.Tk):
 class Contact(tk.Toplevel):
     """The 'Contact' window"""
 
-    def __init__(self, parent, name=None):
-        """Initialise the 'Contact' window."""
+    def __init__(self, parent):
+        """Initialise the window."""
         super().__init__(parent)
         self.name = tk.StringVar()
         self.email = tk.StringVar()
-        if name is not None:
-            self.name.set(name)
-            self.email.set(self.master.people[name])
         # The frame
         frame = ttk.Frame(self)
         # Labels
-        ttk.Label(self, text='Name:').grid(column=0, row=0)
-        ttk.Label(self, text='Email:').grid(column=0, row=1)
+        ttk.Label(frame, text='Name:').grid(column=0, row=0)
+        ttk.Label(frame, text='Email:').grid(column=0, row=1)
         # Entries
-        ttk.Entry(self, textvariable=self.name).grid(column=1, row=0)
-        ttk.Entry(self, textvariable=self.email).grid(column=1, row=1)
+        self.entry_name = ttk.Entry(frame, textvariable=self.name)
+        self.entry_name.grid(column=1, row=0)
+        ttk.Entry(frame, textvariable=self.email).grid(column=1, row=1)
         # The button
-        ttk.Button(
-            self,
-            text='Save',
-            command=self.save
-        ).grid(column=0, row=2, columnspan=2)
+        self.button = ttk.Button(frame, text='Save', command=self.save)
+        self.button.grid(column=0, row=2, columnspan=2)
         frame.grid()
 
     def save(self):
@@ -167,7 +162,7 @@ class Filter(tk.Toplevel):
     """The 'Filter' window"""
 
     def __init__(self, parent):
-        """Initialise the 'Filter' window."""
+        """Initialise the window."""
         super().__init__(parent)
         self.search = tk.StringVar()
         self.search.set(self.master.filter)
@@ -190,6 +185,34 @@ class Filter(tk.Toplevel):
         self.master.filter = self.search.get()
         self.master.load()
         self.destroy()
+
+
+class New(Contact):
+    """The 'New Contact' window"""
+
+    def __init__(self, parent):
+        """Initialise the window."""
+        super().__init__(parent)
+        validate = self.register(self.validate)
+        self.entry_name['validate'] = 'all'
+        self.entry_name['validatecommand'] = (validate, '%P')
+
+    def validate(self, name):
+        """Validate the name."""
+        (self.button.state(['disabled']) if name in self.master.people
+         else self.button.state(['!disabled']))
+        return tk.TRUE
+
+
+class Update(Contact):
+    """The 'Update Contact' window"""
+
+    def __init__(self, parent, name):
+        """Initialise the window."""
+        super().__init__(parent)
+        self.name.set(name)
+        self.email.set(self.master.people[name])
+        self.entry_name.state(['readonly'])
 
 
 def main():
