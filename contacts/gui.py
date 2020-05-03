@@ -17,7 +17,7 @@
 
 import os.path
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox, ttk
 
 import contacts
 
@@ -42,8 +42,14 @@ class App(tk.Tk):
             label='New',
             command=lambda: Contact(self)
         )
-        menu_contact.add_command(label='Open', command=self.open)
-        menu_contact.add_command(label='Delete', command=self.delete)
+        menu_contact.add_command(
+            label='Open',
+            command=self.open
+        )
+        menu_contact.add_command(
+            label='Delete',
+            command=self.delete
+        )
         menu_contact.add_command(
             label='Filter...',
             command=lambda: Filter(self)
@@ -61,18 +67,26 @@ class App(tk.Tk):
         """Delete the selected contacts."""
         for item in self.tree.selection():
             del self.people[self.tree.item(item, 'text')]
-        contacts.save(self.people)
+        self.save()
         self.load()
 
     def load(self):
         """Load the contacts."""
-        self.people = contacts.load()
+        try:
+            self.people = contacts.load()
+        except OSError as err:
+            messagebox.showerror(
+                parent=self,
+                message='There was an error while loading your contacts.',
+                detail=err
+            )
+            self.quit()
         # The tree
         self.tree = ttk.Treeview(self.frame, columns=['email'])
-        if self.filter:
-            names = contacts.search(self.filter, self.people)
-        else:
-            names = list(self.people)
+        names = (
+            contacts.search(self.filter, self.people) if self.filter
+            else list(self.people)
+        )
         for name in names:
             self.tree.insert(
                 '',
@@ -90,9 +104,29 @@ class App(tk.Tk):
     def reload(self):
         """Reload the contacts."""
         if os.path.exists(contacts.FILE):
-            if (mtime := os.path.getmtime(contacts.FILE)) > self.mtime:
-                self.load()
-                self.mtime = mtime
+            try:
+                if (mtime := os.path.getmtime(contacts.FILE)) > self.mtime:
+                    self.load()
+                    self.mtime = mtime
+            except OSError as err:
+                messagebox.showerror(
+                    parent=self,
+                    message='There was an error while reloading your contacts.',
+                    detail=err
+                )
+                self.quit()
+
+    def save(self):
+        """Save the contacts."""
+        try:
+            contacts.save(self.people)
+        except OSError as err:
+            messagebox.showerror(
+                parent=self,
+                message='There was an error while saving your contacts.',
+                detail=err
+            )
+            self.quit()
 
 
 class Contact(tk.Toplevel):
@@ -105,7 +139,7 @@ class Contact(tk.Toplevel):
         self.email = tk.StringVar()
         if name is not None:
             self.name.set(name)
-            self.email.set(parent.people[name])
+            self.email.set(self.master.people[name])
         # The frame
         frame = ttk.Frame(self)
         # Labels
@@ -115,13 +149,17 @@ class Contact(tk.Toplevel):
         ttk.Entry(self, textvariable=self.name).grid(column=1, row=0)
         ttk.Entry(self, textvariable=self.email).grid(column=1, row=1)
         # The button
-        ttk.Button(self, text='Save', command=self.save).grid(column=1, row=2)
+        ttk.Button(
+            self,
+            text='Save',
+            command=self.save
+        ).grid(column=0, row=2, columnspan=2)
         frame.grid()
 
     def save(self):
         """Update the contact."""
         self.master.people[self.name.get()] = self.email.get()
-        contacts.save(self.master.people)
+        self.master.save()
         self.destroy()
 
 
@@ -132,7 +170,7 @@ class Filter(tk.Toplevel):
         """Initialise the 'Filter' window."""
         super().__init__(parent)
         self.search = tk.StringVar()
-        self.search.set(parent.filter)
+        self.search.set(self.master.filter)
         # The frame
         frame = ttk.Frame(self)
         # The label

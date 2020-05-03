@@ -69,8 +69,16 @@ def main(argv=None):
         formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=False
     )
-    parser.add_argument('--search', help='search your contacts')
-    parser.add_argument('-h', '--help', action='help', help='show this message')
+    parser.add_argument(
+        '--search',
+        help='search your contacts'
+    )
+    parser.add_argument(
+        '-h',
+        '--help',
+        action='help',
+        help='show this message'
+    )
     parser.add_argument(
         '--version',
         action='version',
@@ -89,8 +97,14 @@ def main(argv=None):
         help='store a new contact',
         add_help=False
     )
-    parser_new.add_argument('name', help='the name of the contact')
-    parser_new.add_argument('email', help='the email address of the contact')
+    parser_new.add_argument(
+        'name',
+        help='the name of the contact'
+    )
+    parser_new.add_argument(
+        'email',
+        help='the email address of the contact'
+    )
     parser_new.add_argument(
         '-h',
         '--help',
@@ -106,8 +120,14 @@ def main(argv=None):
         help='edit a contact',
         add_help=False
     )
-    parser_edit.add_argument('name', help='the name of the contact')
-    parser_edit.add_argument('email', help='the email address of the contact')
+    parser_edit.add_argument(
+        'name',
+        help='the name of the contact'
+    )
+    parser_edit.add_argument(
+        'email',
+        help='the email address of the contact'
+    )
     parser_edit.add_argument(
         '-h',
         '--help',
@@ -123,7 +143,10 @@ def main(argv=None):
         help='delete a contact',
         add_help=False
     )
-    parser_delete.add_argument('name', help='the name of the contact')
+    parser_delete.add_argument(
+        'name',
+        help='the name of the contact'
+    )
     parser_delete.add_argument(
         '-h',
         '--help',
@@ -139,10 +162,10 @@ def main(argv=None):
     else:
         # Show the contacts.
         people = load()
-        if args.search:
-            names = contacts.search(args.search, people)
-        else:
-            names = list(people)
+        names = (
+            contacts.search(args.search, people) if args.search
+            else list(people)
+        )
         if names:
             for name in sorted(names):
                 print(f'{name}: {people[name]}')
