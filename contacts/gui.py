@@ -15,7 +15,6 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """usage: python -m contacts.gui"""
 
-import os.path
 import tkinter as tk
 from tkinter import messagebox, ttk
 
@@ -28,11 +27,18 @@ class App(tk.Tk):
     def __init__(self):
         """Initialise the app."""
         super().__init__()
-        self.people = {}
+        try:
+            self.contacts = contacts.load()
+        except OSError as err:
+            messagebox.showerror(
+                parent=self,
+                message='There was an error while loading your contacts.',
+                detail=err
+            )
         self.filter = ''
-        self.mtime = 0
-        # Events
-        self.bind('<FocusIn>', lambda e: self.reload())
+        self.title('Contacts')
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
         # The menubar
         self.option_add('*tearOff', tk.FALSE)
         menubar = tk.Menu(self)
@@ -57,69 +63,56 @@ class App(tk.Tk):
         menubar.add_cascade(menu=menu_contact, label='Contact')
         self['menu'] = menubar
         # The frame
-        self.frame = ttk.Frame(self)
+        frame = ttk.Frame(self)
+        frame.columnconfigure(0, weight=1)
+        frame.rowconfigure(0, weight=1)
         # The tree
-        self.tree = ttk.Treeview(self.frame)
+        self.tree = ttk.Treeview(frame, columns=['email'])
+        self.tree.heading('#0', text='Full name')
+        self.tree.heading('email', text='Email address')
         self.load()
-        self.frame.grid()
+        self.tree.grid(column=0, row=0, sticky='nsew')
+        # The scrollbar
+        scrollbar = ttk.Scrollbar(
+            frame,
+            orient='vertical',
+            command=self.tree.yview
+        )
+        self.tree['yscrollcommand'] = scrollbar.set
+        scrollbar.grid(column=1, row=0, sticky='ns')
+        frame.grid(sticky='nsew')
 
     def delete(self):
         """Delete the selected contacts."""
         for item in self.tree.selection():
-            del self.people[self.tree.item(item, 'text')]
+            del self.contacts[item]
+            self.tree.delete(item)
         self.save()
-        self.load()
 
     def load(self):
         """Load the contacts."""
-        try:
-            self.people = contacts.load()
-        except OSError as err:
-            messagebox.showerror(
-                parent=self,
-                message='There was an error while loading your contacts.',
-                detail=err
-            )
-            self.quit()
-        # The tree
-        self.tree = ttk.Treeview(self.frame, columns=['email'])
-        names = (
-            contacts.search(self.filter, self.people) if self.filter
-            else list(self.people)
-        )
-        for name in names:
+        self.tree.delete(*self.tree.get_children())
+        for name in sorted(
+                contacts.search(self.filter, self.contacts) if self.filter
+                else list(self.contacts)
+        ):
             self.tree.insert(
                 '',
                 'end',
+                name,
                 text=name,
-                values=[self.people[name]]
+                values=[self.contacts[name]]
             )
-        self.tree.grid(column=0, row=0)
 
     def open(self):
         """Open the selected contacts."""
         for item in self.tree.selection():
-            Update(self, self.tree.item(item, 'text'))
-
-    def reload(self):
-        """Reload the contacts."""
-        if os.path.exists(contacts.FILE):
-            try:
-                if (mtime := os.path.getmtime(contacts.FILE)) > self.mtime:
-                    self.load()
-                    self.mtime = mtime
-            except OSError as err:
-                messagebox.showerror(
-                    parent=self,
-                    message='There was an error while reloading your contacts.',
-                    detail=err
-                )
-                self.quit()
+            Update(self, item)
 
     def save(self):
         """Save the contacts."""
         try:
-            contacts.save(self.people)
+            contacts.save(self.contacts)
         except OSError as err:
             messagebox.showerror(
                 parent=self,
@@ -152,9 +145,10 @@ class Contact(tk.Toplevel):
         frame.grid()
 
     def save(self):
-        """Update the contact."""
-        self.master.people[self.name.get()] = self.email.get()
+        """Update the contacts."""
+        self.master.contacts[self.name.get()] = self.email.get()
         self.master.save()
+        self.master.load()
         self.destroy()
 
 
@@ -199,7 +193,7 @@ class New(Contact):
 
     def validate(self, name):
         """Validate the name."""
-        (self.button.state(['disabled']) if name in self.master.people
+        (self.button.state(['disabled']) if name in self.master.contacts
          else self.button.state(['!disabled']))
         return tk.TRUE
 
@@ -211,7 +205,7 @@ class Update(Contact):
         """Initialise the window."""
         super().__init__(parent)
         self.name.set(name)
-        self.email.set(self.master.people[name])
+        self.email.set(self.master.contacts[name])
         self.entry_name.state(['readonly'])
 
 

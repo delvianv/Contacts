@@ -32,10 +32,9 @@ def delete(args):
     people = load()
     modified = False
     # Delete the named contacts.
-    names = (
-        contacts.search(args.search, people) if args.search else args.names
-    )
-    for name in names:
+    for name in (
+            contacts.search(args.search, people) if args.search else args.names
+    ):
         try:
             del people[name]
         except KeyError:
