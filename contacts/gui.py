@@ -184,20 +184,36 @@ class Filter(tk.Toplevel):
     def __init__(self, parent):
         """Initialise the window."""
         super().__init__(parent)
+        self.title('Filter')
+        self.resizable(tk.FALSE, tk.FALSE)
         self.search = tk.StringVar()
         self.search.set(self.master.filter)
         # The frame
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(self, padding=12)
         # The label
-        ttk.Label(frame, text='Filter:').grid(column=0, row=0)
-        # The entry
-        ttk.Entry(frame, textvariable=self.search).grid(column=1, row=0)
-        # The button
-        ttk.Button(
+        ttk.Label(
             frame,
+            text='Filter:'
+        ).grid(column=0, row=0, padx=(0, 6), pady=(0, 6))
+        # The entry
+        ttk.Entry(
+            frame,
+            textvariable=self.search,
+            width=30
+        ).grid(column=1, row=0, pady=(0, 6))
+        # Buttons
+        frame_buttons = ttk.Frame(frame)
+        ttk.Button(
+            frame_buttons,
+            text='Cancel',
+            command=self.destroy
+        ).grid(column=0, row=0, padx=(0, 6))
+        ttk.Button(
+            frame_buttons,
             text='Filter',
             command=self.filter
-        ).grid(column=1, row=1)
+        ).grid(column=1, row=0)
+        frame_buttons.grid(column=0, row=1, columnspan=2, sticky='e')
         frame.grid()
 
     def filter(self):
