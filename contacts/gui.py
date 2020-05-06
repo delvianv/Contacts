@@ -27,6 +27,9 @@ class App(tk.Tk):
     def __init__(self):
         """Initialise the app."""
         super().__init__()
+        self.title('Contacts')
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
         try:
             self.contacts = contacts.load()
         except OSError as err:
@@ -36,9 +39,6 @@ class App(tk.Tk):
                 detail=err
             )
         self.filter = ''
-        self.title('Contacts')
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
         # The menubar
         self.option_add('*tearOff', tk.FALSE)
         menubar = tk.Menu(self)
@@ -128,20 +128,46 @@ class Contact(tk.Toplevel):
     def __init__(self, parent):
         """Initialise the window."""
         super().__init__(parent)
+        self.resizable(tk.FALSE, tk.FALSE)
         self.name = tk.StringVar()
         self.email = tk.StringVar()
         # The frame
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(self, padding=12)
         # Labels
-        ttk.Label(frame, text='Name:').grid(column=0, row=0)
-        ttk.Label(frame, text='Email:').grid(column=0, row=1)
+        ttk.Label(
+            frame,
+            text='Full name:'
+        ).grid(column=0, row=0, sticky='w', pady=(0, 6))
+        ttk.Label(
+            frame,
+            text='Email address:'
+        ).grid(column=0, row=1, padx=(0, 6), pady=(0, 6))
         # Entries
-        self.entry_name = ttk.Entry(frame, textvariable=self.name)
-        self.entry_name.grid(column=1, row=0)
-        ttk.Entry(frame, textvariable=self.email).grid(column=1, row=1)
-        # The button
-        self.button = ttk.Button(frame, text='Save', command=self.save)
-        self.button.grid(column=0, row=2, columnspan=2)
+        self.entry_name = ttk.Entry(
+            frame,
+            textvariable=self.name,
+            width=30
+        )
+        self.entry_name.grid(column=1, row=0, pady=(0, 6))
+        ttk.Entry(
+            frame,
+            textvariable=self.email,
+            width=30
+        ).grid(column=1, row=1, pady=(0, 6))
+        # Buttons
+        frame_buttons = ttk.Frame(frame)
+        ttk.Button(
+            frame_buttons,
+            text='Cancel',
+            command=self.destroy
+        ).grid(column=0, row=0, padx=(0, 6))
+        self.button_save = ttk.Button(
+            frame_buttons,
+            text='Save',
+            command=self.save
+        )
+        self.button_save.grid(column=1, row=0)
+        frame_buttons.grid(column=0, row=2, columnspan=2, sticky='e')
         frame.grid()
 
     def save(self):
@@ -187,14 +213,15 @@ class New(Contact):
     def __init__(self, parent):
         """Initialise the window."""
         super().__init__(parent)
+        self.title('New Contact')
         validate = self.register(self.validate)
         self.entry_name['validate'] = 'all'
         self.entry_name['validatecommand'] = (validate, '%P')
 
     def validate(self, name):
         """Validate the name."""
-        (self.button.state(['disabled']) if name in self.master.contacts
-         else self.button.state(['!disabled']))
+        (self.button_save.state(['disabled']) if name in self.master.contacts
+         else self.button_save.state(['!disabled']))
         return tk.TRUE
 
 
@@ -204,6 +231,7 @@ class Update(Contact):
     def __init__(self, parent, name):
         """Initialise the window."""
         super().__init__(parent)
+        self.title(name)
         self.name.set(name)
         self.email.set(self.master.contacts[name])
         self.entry_name.state(['readonly'])
