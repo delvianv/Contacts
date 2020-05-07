@@ -14,21 +14,15 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """usage: python -m contacts.cli [option] {command}"""
-# TODO: Improve search.
 
 import argparse
 import sys
 
 import contacts
 
-COPYRIGHT = f'''Copyright (C) 2020  {contacts.__author__}
-This program comes with ABSOLUTELY NO WARRANTY.
-This is free software, and you are welcome to redistribute it under
-certain conditions.  See the GNU General Public License for more
-details <https://www.gnu.org/licenses/>.'''
 VERSION = f'''Contacts {contacts.__version__}
 
-{COPYRIGHT}'''
+{contacts.COPYRIGHT}'''
 
 
 def delete(args):
@@ -70,8 +64,8 @@ def main(argv=None):
     # noinspection PyTypeChecker
     parser = argparse.ArgumentParser(
         usage='%(prog)s [option] {command}',
-        description='Show your contacts.',
-        epilog=COPYRIGHT,
+        description=contacts.__doc__,
+        epilog=contacts.COPYRIGHT,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         add_help=False
     )

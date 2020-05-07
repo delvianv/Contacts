@@ -21,6 +21,36 @@ from tkinter import messagebox, ttk
 import contacts
 
 
+class About(tk.Toplevel):
+    """The 'About' window"""
+
+    def __init__(self, parent):
+        """Initialise the window."""
+        super().__init__(parent)
+        # The frame
+        frame = ttk.Frame(self, padding=12)
+        # Labels
+        ttk.Label(
+            frame,
+            text=f'Contacts {contacts.__version__}'
+        ).grid(column=0, row=0, sticky='w', pady=(0, 6))
+        ttk.Label(
+            frame,
+            text=contacts.__doc__
+        ).grid(column=0, row=1, sticky='w', pady=(0, 6))
+        ttk.Label(
+            frame,
+            text=contacts.COPYRIGHT
+        ).grid(column=0, row=2, pady=(0, 6))
+        # The button
+        ttk.Button(
+            frame,
+            text='Close',
+            command=self.destroy
+        ).grid(column=0, row=3, sticky='e')
+        frame.grid()
+
+
 class App(tk.Tk):
     """The app"""
 
@@ -68,6 +98,13 @@ class App(tk.Tk):
             command=self.quit
         )
         menubar.add_cascade(menu=menu_contact, label='Contact')
+        # The "Help" menu
+        menu_help = tk.Menu(menubar)
+        menu_help.add_command(
+            label='About',
+            command=lambda: About(self)
+        )
+        menubar.add_cascade(menu=menu_help, label='Help')
         self['menu'] = menubar
         # The frame
         frame = ttk.Frame(self)
