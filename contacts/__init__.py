@@ -39,10 +39,12 @@ def save(contacts):
         json.dump(contacts, file)
 
 
-def search(arg, contacts):
+def search(args, contacts):
     """Search the contacts."""
     names = []
     for name in contacts:
-        if arg in name or arg in contacts[name]:
+        for arg in args:
+            if arg not in name and arg not in contacts[name]:
+                break
             names.append(name)
     return names

@@ -56,7 +56,7 @@ class Search(unittest.TestCase):
 
     def test_search(self):
         """Test searching the contacts."""
-        self.assertEqual(['name'], contacts.search('name', {'name': 'email'}))
+        self.assertEqual(['name'], contacts.search(['name'], {'name': 'email'}))
 
 
 if __name__ == '__main__':

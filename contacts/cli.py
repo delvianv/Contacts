@@ -77,6 +77,7 @@ def main(argv=None):
     )
     parser.add_argument(
         '--search',
+        nargs='+',
         help='show your contacts that match the search'
     )
     parser.add_argument(
@@ -145,7 +146,7 @@ def main(argv=None):
     parser_delete = subparsers.add_parser(
         'delete',
         aliases=['del'],
-        usage='delete [option] [names...]',
+        usage='delete [option] [names]',
         description='Delete your contacts.',
         help='delete your contacts',
         add_help=False
@@ -158,6 +159,7 @@ def main(argv=None):
     parser_delete_group = parser_delete.add_mutually_exclusive_group()
     parser_delete_group.add_argument(
         '--search',
+        nargs='+',
         help='delete your contacts that match the search'
     )
     parser_delete_group.add_argument(
