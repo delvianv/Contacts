@@ -55,5 +55,6 @@ def search(args, contacts):
         for arg in args:
             if arg not in name and arg not in contacts[name]:
                 break
+        else:
             names.append(name)
     return names

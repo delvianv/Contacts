@@ -145,7 +145,10 @@ class App(tk.Tk):
         """Load the contacts."""
         self.tree.delete(*self.tree.get_children())
         for name in sorted(
-                contacts.search(self.filter, self.contacts) if self.filter
+                contacts.search(
+                    self.filter.split(),
+                    self.contacts
+                ) if self.filter
                 else list(self.contacts)
         ):
             self.tree.insert(
