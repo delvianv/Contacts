@@ -16,7 +16,7 @@
 """Store your contacts."""
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0b2'
+__version__ = '2.0b3'
 
 import json
 import os.path
@@ -26,7 +26,7 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under
 certain conditions.  See the GNU General Public License for more
 details <https://www.gnu.org/licenses/>.'''
-DEV_MODE = False
+DEV_MODE = True
 FILE = (
     '.contacts' if DEV_MODE
     else os.path.join(os.path.expanduser('~'), '.contacts')

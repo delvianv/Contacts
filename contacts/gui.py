@@ -27,6 +27,8 @@ class About(tk.Toplevel):
     def __init__(self, parent):
         """Initialise the window."""
         super().__init__(parent)
+        self.title('About Contacts')
+        self.resizable(tk.FALSE, tk.FALSE)
         # The frame
         frame = ttk.Frame(self, padding=12)
         # Labels
@@ -49,6 +51,7 @@ class About(tk.Toplevel):
             command=self.destroy
         ).grid(column=0, row=3, sticky='e')
         frame.grid()
+        self.focus()
 
 
 class App(tk.Tk):
@@ -193,11 +196,12 @@ class Contact(tk.Toplevel):
             width=30
         )
         self.entry_name.grid(column=1, row=0, pady=(0, 6))
-        ttk.Entry(
+        self.entry_email = ttk.Entry(
             frame,
             textvariable=self.email,
             width=30
-        ).grid(column=1, row=1, pady=(0, 6))
+        )
+        self.entry_email.grid(column=1, row=1, pady=(0, 6))
         # Buttons
         frame_buttons = ttk.Frame(frame)
         ttk.Button(
@@ -240,11 +244,12 @@ class Filter(tk.Toplevel):
             text='Filter:'
         ).grid(column=0, row=0, padx=(0, 6), pady=(0, 6))
         # The entry
-        ttk.Entry(
+        self.entry = ttk.Entry(
             frame,
             textvariable=self.search,
             width=30
-        ).grid(column=1, row=0, pady=(0, 6))
+        )
+        self.entry.grid(column=1, row=0, pady=(0, 6))
         # Buttons
         frame_buttons = ttk.Frame(frame)
         ttk.Button(
@@ -259,6 +264,7 @@ class Filter(tk.Toplevel):
         ).grid(column=1, row=0)
         frame_buttons.grid(column=0, row=1, columnspan=2, sticky='e')
         frame.grid()
+        self.entry.focus()
 
     def filter(self):
         """Filter the contacts."""
@@ -277,6 +283,7 @@ class New(Contact):
         validate = self.register(self.validate)
         self.entry_name['validate'] = 'all'
         self.entry_name['validatecommand'] = (validate, '%P')
+        self.entry_name.focus()
 
     def validate(self, name):
         """Validate the name."""
@@ -295,6 +302,7 @@ class Update(Contact):
         self.name.set(name)
         self.email.set(self.master.contacts[name])
         self.entry_name.state(['readonly'])
+        self.entry_email.focus()
 
 
 def main():
