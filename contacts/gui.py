@@ -52,13 +52,20 @@ class App(tk.Tk):
             label='Open',
             command=self.open
         )
+        menu_contact.add_separator()
         menu_contact.add_command(
             label='Delete',
             command=self.delete
         )
+        menu_contact.add_separator()
         menu_contact.add_command(
             label='Filter...',
             command=lambda: Filter(self)
+        )
+        menu_contact.add_separator()
+        menu_contact.add_command(
+            label='Quit',
+            command=self.quit
         )
         menubar.add_cascade(menu=menu_contact, label='Contact')
         self['menu'] = menubar
