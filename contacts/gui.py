@@ -29,6 +29,8 @@ class About(tk.Toplevel):
         super().__init__(parent)
         self.title('About Contacts')
         self.resizable(tk.FALSE, tk.FALSE)
+        self.bind('<Escape>', lambda e: self.destroy())
+        self.bind('<Return>', lambda e: self.destroy())
         # The frame
         frame = ttk.Frame(self, padding=12)
         # Labels
@@ -48,7 +50,8 @@ class About(tk.Toplevel):
         ttk.Button(
             frame,
             text='Close',
-            command=self.destroy
+            command=self.destroy,
+            default='active'
         ).grid(column=0, row=3, sticky='e')
         frame.grid()
         self.focus()
@@ -63,6 +66,8 @@ class App(tk.Tk):
         self.title('Contacts')
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
+        self.bind('<Delete>', lambda e: self.delete())
+        self.bind('<Return>', lambda e: self.open())
         try:
             self.contacts = contacts.load()
         except OSError as err:
@@ -176,6 +181,8 @@ class Contact(tk.Toplevel):
         """Initialise the window."""
         super().__init__(parent)
         self.resizable(tk.FALSE, tk.FALSE)
+        self.bind('<Escape>', lambda e: self.destroy())
+        self.bind('<Return>', lambda e: self.button_save.invoke())
         self.name = tk.StringVar()
         self.email = tk.StringVar()
         # The frame
@@ -212,7 +219,8 @@ class Contact(tk.Toplevel):
         self.button_save = ttk.Button(
             frame_buttons,
             text='Save',
-            command=self.save
+            command=self.save,
+            default='active'
         )
         self.button_save.grid(column=1, row=0)
         frame_buttons.grid(column=0, row=2, columnspan=2, sticky='e')
@@ -234,6 +242,8 @@ class Filter(tk.Toplevel):
         super().__init__(parent)
         self.title('Filter')
         self.resizable(tk.FALSE, tk.FALSE)
+        self.bind('<Escape>', lambda e: self.destroy())
+        self.bind('<Return>', lambda e: self.filter())
         self.search = tk.StringVar()
         self.search.set(self.master.filter)
         # The frame
@@ -260,11 +270,13 @@ class Filter(tk.Toplevel):
         ttk.Button(
             frame_buttons,
             text='Filter',
-            command=self.filter
+            command=self.filter,
+            default='active'
         ).grid(column=1, row=0)
         frame_buttons.grid(column=0, row=1, columnspan=2, sticky='e')
         frame.grid()
         self.entry.focus()
+        self.entry.select_range(0, 'end')
 
     def filter(self):
         """Filter the contacts."""
@@ -303,6 +315,7 @@ class Update(Contact):
         self.email.set(self.master.contacts[name])
         self.entry_name.state(['readonly'])
         self.entry_email.focus()
+        self.entry_email.select_range(0, 'end')
 
 
 def main():
