@@ -26,7 +26,11 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under
 certain conditions.  See the GNU General Public License for more
 details <https://www.gnu.org/licenses/>.'''
-FILE = '.contacts'
+DEV_MODE = False
+FILE = (
+    '.contacts' if DEV_MODE
+    else os.path.join(os.path.expanduser('~'), '.contacts')
+)
 
 
 def load():
