@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-"""usage: python -m contacts.cli [OPTION] {COMMAND}"""
+"""usage: python -m contacts.cli [option] {command}"""
 # TODO: Improve search.
 
 import argparse
@@ -26,6 +26,9 @@ This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under
 certain conditions.  See the GNU General Public License for more
 details <https://www.gnu.org/licenses/>.'''
+VERSION = f'''Contacts {contacts.__version__}
+
+{COPYRIGHT}'''
 
 
 def delete(args):
@@ -66,7 +69,7 @@ def main(argv=None):
     # The command line parser
     # noinspection PyTypeChecker
     parser = argparse.ArgumentParser(
-        usage='%(prog)s [OPTION] {COMMAND}',
+        usage='%(prog)s [option] {command}',
         description='Show your contacts.',
         epilog=COPYRIGHT,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -85,17 +88,17 @@ def main(argv=None):
     parser.add_argument(
         '--version',
         action='version',
-        version=contacts.__version__,
+        version=VERSION,
         help='show the version of the app'
     )
     subparsers = parser.add_subparsers(
         description='Update your contacts.',
-        metavar='{COMMAND}'
+        metavar='{command}'
     )
     # The "new" command parser
     parser_new = subparsers.add_parser(
         'new',
-        usage='new [OPTION] name email',
+        usage='new [option] name email',
         description='Store a new contact.',
         help='store a new contact',
         add_help=False
@@ -118,7 +121,7 @@ def main(argv=None):
     # The "update" command parser
     parser_update = subparsers.add_parser(
         'update',
-        usage='update [OPTION] name email',
+        usage='update [option] name email',
         description='Update a contact.',
         help='update a contact',
         add_help=False
@@ -142,7 +145,7 @@ def main(argv=None):
     parser_delete = subparsers.add_parser(
         'delete',
         aliases=['del'],
-        usage='delete [OPTION] [names]',
+        usage='delete [option] [names...]',
         description='Delete your contacts.',
         help='delete your contacts',
         add_help=False

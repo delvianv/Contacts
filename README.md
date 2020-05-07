@@ -20,7 +20,7 @@ Store your contacts.
     
 **The command line interface**
 
-    contacts [OPTION] {COMMAND}
+    contacts [option] {command}
 
 ### License
 
