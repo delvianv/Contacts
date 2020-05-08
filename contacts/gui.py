@@ -144,7 +144,7 @@ class App(tk.Tk):
                 command=self.quit,
                 accelerator='Ctrl+Q'
             )
-            menubar.add_cascade(menu=menu_contact, label='Contact')
+        menubar.add_cascade(menu=menu_contact, label='Contact')
         # The "Window" menu
         # Only show this menu on Apple.
         if platform == 'aqua':

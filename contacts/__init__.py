@@ -16,7 +16,7 @@
 """Store your contacts."""
 
 __author__ = 'Delvian Valentine <delvian.valentine@gmail.com>'
-__version__ = '2.0b4'
+__version__ = '2.0b5'
 
 import json
 import os.path
