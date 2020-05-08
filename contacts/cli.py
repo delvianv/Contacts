@@ -189,8 +189,7 @@ def main(argv=None):
 
 def new(args):
     """Store a new contact."""
-    people = load()
-    if args.name not in people:
+    if args.name not in (people := load()):
         people[args.name] = args.email
         save(people)
         print(f'{args.name} was stored.')
@@ -209,8 +208,7 @@ def save(people):
 
 def update(args):
     """Update a contact."""
-    people = load()
-    if args.name in people:
+    if args.name in (people := load()):
         people[args.name] = args.email
         save(people)
         print(f'{args.name} was updated.')

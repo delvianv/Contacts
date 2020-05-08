@@ -21,6 +21,16 @@ from tkinter import messagebox, ttk
 import contacts
 
 
+SHORTCUTS = {
+    'New': 'Ctrl+N',
+    'Open': 'Ctrl+O',
+}
+SHORTCUTS_APPLE = {
+    'New': 'Command-N',
+    'Open': 'Command-O'
+}
+
+
 class About(tk.Toplevel):
     """The 'About' window"""
 
@@ -36,7 +46,8 @@ class About(tk.Toplevel):
         # Labels
         ttk.Label(
             frame,
-            text=f'Contacts {contacts.__version__}'
+            text=f'Contacts {contacts.__version__}',
+            font='Helvetica 12 bold'
         ).grid(column=0, row=0, sticky='w', pady=(0, 6))
         ttk.Label(
             frame,
@@ -66,6 +77,20 @@ class App(tk.Tk):
         self.title('Contacts')
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
+        platform = self.tk.call('tk', 'windowingsystem')
+        shortcuts = SHORTCUTS_APPLE if platform == 'aqua' else SHORTCUTS
+        if platform == 'aqua':
+            self.bind('<Command-N>', lambda e: New(self))
+            self.bind('<Command-n>', lambda e: New(self))
+            self.bind('<Command-O>', lambda e: self.open())
+            self.bind('<Command-o>', lambda e: self.open())
+        else:
+            self.bind('<Control-N>', lambda e: New(self))
+            self.bind('<Control-n>', lambda e: New(self))
+            self.bind('<Control-O>', lambda e: self.open())
+            self.bind('<Control-o>', lambda e: self.open())
+            self.bind('<Control-Q>', lambda e: self.quit())
+            self.bind('<Control-q>', lambda e: self.quit())
         self.bind('<Delete>', lambda e: self.delete())
         self.bind('<Return>', lambda e: self.open())
         try:
@@ -80,39 +105,60 @@ class App(tk.Tk):
         # The menubar
         self.option_add('*tearOff', tk.FALSE)
         menubar = tk.Menu(self)
+        # The "Apple" menu
+        if platform == 'aqua':
+            menu_apple = tk.Menu(menubar, name='apple')
+            menu_apple.add_command(
+                label='About Contacts',
+                command=lambda: About(self)
+            )
+            menubar.add_cascade(menu=menu_apple)
         # The "Contact" menu
         menu_contact = tk.Menu(menubar)
         menu_contact.add_command(
             label='New',
-            command=lambda: New(self)
+            command=lambda: New(self),
+            accelerator=shortcuts['New']
         )
         menu_contact.add_command(
             label='Open',
-            command=self.open
+            command=self.open,
+            accelerator=shortcuts['Open']
         )
         menu_contact.add_separator()
         menu_contact.add_command(
             label='Delete',
-            command=self.delete
+            command=self.delete,
+            accelerator='Delete'
         )
         menu_contact.add_separator()
         menu_contact.add_command(
             label='Filter...',
             command=lambda: Filter(self)
         )
-        menu_contact.add_separator()
-        menu_contact.add_command(
-            label='Quit',
-            command=self.quit
-        )
-        menubar.add_cascade(menu=menu_contact, label='Contact')
+        # Do not show this command on Apple.
+        if platform != 'aqua':
+            menu_contact.add_separator()
+            menu_contact.add_command(
+                label='Quit',
+                command=self.quit,
+                accelerator='Ctrl+Q'
+            )
+            menubar.add_cascade(menu=menu_contact, label='Contact')
+        # The "Window" menu
+        # Only show this menu on Apple.
+        if platform == 'aqua':
+            menu_window = tk.Menu(menubar, name='window')
+            menubar.add_cascade(menu=menu_window, label='Window')
         # The "Help" menu
-        menu_help = tk.Menu(menubar)
-        menu_help.add_command(
-            label='About',
-            command=lambda: About(self)
-        )
-        menubar.add_cascade(menu=menu_help, label='Help')
+        # Do not show this menu on Apple.
+        if platform != 'aqua':
+            menu_help = tk.Menu(menubar, name='help')
+            menu_help.add_command(
+                label='About',
+                command=lambda: About(self)
+            )
+            menubar.add_cascade(menu=menu_help, label='Help')
         self['menu'] = menubar
         # The frame
         frame = ttk.Frame(self)
