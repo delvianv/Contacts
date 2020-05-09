@@ -41,6 +41,8 @@ class About(tk.Toplevel):
         self.resizable(tk.FALSE, tk.FALSE)
         self.bind('<Escape>', lambda e: self.destroy())
         self.bind('<Return>', lambda e: self.destroy())
+        self.bind('<Alt-C>', lambda e: self.destroy())
+        self.bind('<Alt-c>', lambda e: self.destroy())
         # The frame
         frame = ttk.Frame(self, padding=12)
         # Labels
@@ -62,7 +64,8 @@ class About(tk.Toplevel):
             frame,
             text='Close',
             command=self.destroy,
-            default='active'
+            default='active',
+            underline=0
         ).grid(column=0, row=3, sticky='e')
         frame.grid()
         self.focus()
@@ -118,11 +121,13 @@ class App(tk.Tk):
         menu_contact.add_command(
             label='New',
             command=lambda: New(self),
+            underline=0,
             accelerator=shortcuts['New']
         )
         menu_contact.add_command(
             label='Open',
             command=self.open,
+            underline=0,
             accelerator=shortcuts['Open']
         )
         menu_contact.add_separator()
@@ -134,7 +139,8 @@ class App(tk.Tk):
         menu_contact.add_separator()
         menu_contact.add_command(
             label='Filter...',
-            command=lambda: Filter(self)
+            command=lambda: Filter(self),
+            underline=0
         )
         # Do not show this command on Apple.
         if platform != 'aqua':
@@ -142,9 +148,10 @@ class App(tk.Tk):
             menu_contact.add_command(
                 label='Quit',
                 command=self.quit,
+                underline=0,
                 accelerator='Ctrl+Q'
             )
-        menubar.add_cascade(menu=menu_contact, label='Contact')
+        menubar.add_cascade(menu=menu_contact, label='Contact', underline=0)
         # The "Window" menu
         # Only show this menu on Apple.
         if platform == 'aqua':
@@ -156,9 +163,10 @@ class App(tk.Tk):
             menu_help = tk.Menu(menubar, name='help')
             menu_help.add_command(
                 label='About',
-                command=lambda: About(self)
+                command=lambda: About(self),
+                underline=0
             )
-            menubar.add_cascade(menu=menu_help, label='Help')
+            menubar.add_cascade(menu=menu_help, label='Help', underline=0)
         self['menu'] = menubar
         # The frame
         frame = ttk.Frame(self)
@@ -233,7 +241,15 @@ class Contact(tk.Toplevel):
         super().__init__(parent)
         self.resizable(tk.FALSE, tk.FALSE)
         self.bind('<Escape>', lambda e: self.destroy())
+        self.bind('<Alt-C>', lambda e: self.destroy())
+        self.bind('<Alt-c>', lambda e: self.destroy())
         self.bind('<Return>', lambda e: self.button_save.invoke())
+        self.bind('<Alt-S>', lambda e: self.button_save.invoke())
+        self.bind('<Alt-s>', lambda e: self.button_save.invoke())
+        self.bind('<Alt-F>', lambda e: focus_entry(self.entry_name))
+        self.bind('<Alt-f>', lambda e: focus_entry(self.entry_name))
+        self.bind('<Alt-E>', lambda e: focus_entry(self.entry_email))
+        self.bind('<Alt-e>', lambda e: focus_entry(self.entry_email))
         self.name = tk.StringVar()
         self.email = tk.StringVar()
         # The frame
@@ -241,11 +257,13 @@ class Contact(tk.Toplevel):
         # Labels
         ttk.Label(
             frame,
-            text='Full name:'
+            text='Full name:',
+            underline=0
         ).grid(column=0, row=0, sticky='w', pady=(0, 6))
         ttk.Label(
             frame,
-            text='Email address:'
+            text='Email address:',
+            underline=0
         ).grid(column=0, row=1, padx=(0, 6), pady=(0, 6))
         # Entries
         self.entry_name = ttk.Entry(
@@ -265,13 +283,15 @@ class Contact(tk.Toplevel):
         ttk.Button(
             frame_buttons,
             text='Cancel',
-            command=self.destroy
+            command=self.destroy,
+            underline=0
         ).grid(column=0, row=0, padx=(0, 6))
         self.button_save = ttk.Button(
             frame_buttons,
             text='Save',
             command=self.save,
-            default='active'
+            default='active',
+            underline=0
         )
         self.button_save.grid(column=1, row=0)
         frame_buttons.grid(column=0, row=2, columnspan=2, sticky='e')
@@ -294,7 +314,11 @@ class Filter(tk.Toplevel):
         self.title('Filter')
         self.resizable(tk.FALSE, tk.FALSE)
         self.bind('<Escape>', lambda e: self.destroy())
+        self.bind('<Alt-C>', lambda e: self.destroy())
+        self.bind('<Alt-c>', lambda e: self.destroy())
         self.bind('<Return>', lambda e: self.filter())
+        self.bind('<Alt-F>', lambda e: focus_entry(self.entry))
+        self.bind('<Alt-f>', lambda e: focus_entry(self.entry))
         self.search = tk.StringVar()
         self.search.set(self.master.filter)
         # The frame
@@ -302,7 +326,8 @@ class Filter(tk.Toplevel):
         # The label
         ttk.Label(
             frame,
-            text='Filter:'
+            text='Filter:',
+            underline=0
         ).grid(column=0, row=0, padx=(0, 6), pady=(0, 6))
         # The entry
         self.entry = ttk.Entry(
@@ -316,7 +341,8 @@ class Filter(tk.Toplevel):
         ttk.Button(
             frame_buttons,
             text='Cancel',
-            command=self.destroy
+            command=self.destroy,
+            underline=0
         ).grid(column=0, row=0, padx=(0, 6))
         ttk.Button(
             frame_buttons,
@@ -326,8 +352,7 @@ class Filter(tk.Toplevel):
         ).grid(column=1, row=0)
         frame_buttons.grid(column=0, row=1, columnspan=2, sticky='e')
         frame.grid()
-        self.entry.focus()
-        self.entry.select_range(0, 'end')
+        focus_entry(self.entry)
 
     def filter(self):
         """Filter the contacts."""
@@ -365,8 +390,13 @@ class Update(Contact):
         self.name.set(name)
         self.email.set(self.master.contacts[name])
         self.entry_name.state(['readonly'])
-        self.entry_email.focus()
-        self.entry_email.select_range(0, 'end')
+        focus_entry(self.entry_email)
+
+
+def focus_entry(entry):
+    """Focus the entry."""
+    entry.focus()
+    entry.select_range(0, 'end')
 
 
 def main():
