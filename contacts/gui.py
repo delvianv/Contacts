@@ -168,6 +168,7 @@ class App(tk.Tk):
         self.tree = ttk.Treeview(frame, columns=['email'])
         self.tree.heading('#0', text='Full name')
         self.tree.heading('email', text='Email address')
+        self.tree.tag_bind('contact', '<Double-1>', lambda e: self.open())
         self.load()
         self.tree.grid(column=0, row=0, sticky='nsew')
         # The scrollbar
@@ -202,7 +203,8 @@ class App(tk.Tk):
                 'end',
                 name,
                 text=name,
-                values=[self.contacts[name]]
+                values=[self.contacts[name]],
+                tags=['contact']
             )
 
     def open(self):
