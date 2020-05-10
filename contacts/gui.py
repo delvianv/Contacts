@@ -317,8 +317,8 @@ class Filter(tk.Toplevel):
         self.bind('<Alt-C>', lambda e: self.destroy())
         self.bind('<Alt-c>', lambda e: self.destroy())
         self.bind('<Return>', lambda e: self.filter())
-        self.bind('<Alt-F>', lambda e: focus_entry(self.entry))
-        self.bind('<Alt-f>', lambda e: focus_entry(self.entry))
+        self.bind('<Alt-F>', lambda e: self.filter())
+        self.bind('<Alt-f>', lambda e: self.filter())
         self.search = tk.StringVar()
         self.search.set(self.master.filter)
         # The frame
@@ -326,8 +326,7 @@ class Filter(tk.Toplevel):
         # The label
         ttk.Label(
             frame,
-            text='Filter:',
-            underline=0
+            text='Filter:'
         ).grid(column=0, row=0, padx=(0, 6), pady=(0, 6))
         # The entry
         self.entry = ttk.Entry(
@@ -348,7 +347,8 @@ class Filter(tk.Toplevel):
             frame_buttons,
             text='Filter',
             command=self.filter,
-            default='active'
+            default='active',
+            underline=0
         ).grid(column=1, row=0)
         frame_buttons.grid(column=0, row=1, columnspan=2, sticky='e')
         frame.grid()
@@ -375,7 +375,8 @@ class New(Contact):
 
     def validate(self, name):
         """Validate the name."""
-        (self.button_save.state(['disabled']) if name in self.master.contacts
+        (self.button_save.state(['disabled'])
+         if name in self.master.contacts or name == ''
          else self.button_save.state(['!disabled']))
         return tk.TRUE
 
