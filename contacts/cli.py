@@ -189,12 +189,15 @@ def main(argv=None):
 
 def new(args):
     """Store a new contact."""
-    if args.name not in (people := load()):
-        people[args.name] = args.email
-        save(people)
-        print(f'{args.name} was stored.')
+    if args.name:
+        if args.name not in (people := load()):
+            people[args.name] = args.email
+            save(people)
+            print(f'{args.name} was stored.')
+        else:
+            print(f'{args.name} is already a contact.')
     else:
-        print(f'{args.name} is already a contact.')
+        print('The name of the contact cannot be blank.')
 
 
 def save(people):

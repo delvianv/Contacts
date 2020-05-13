@@ -20,10 +20,19 @@ from tkinter import messagebox, ttk
 
 import contacts
 
-
+EVENTS = {
+    'New': ['<Control-N>', '<Control-n>'],
+    'Open': ['<Control-O>', '<Control-o>'],
+    'Menu': ['<3>', '<Shift-F10>']
+}
+EVENTS_APPLE = {
+    'New': ['<Command-N>', '<Command-n>'],
+    'Open': ['<Command-O>', '<Command-o>'],
+    'Menu': ['<2>', '<Control-1>']
+}
 SHORTCUTS = {
     'New': 'Ctrl+N',
-    'Open': 'Ctrl+O',
+    'Open': 'Ctrl+O'
 }
 SHORTCUTS_APPLE = {
     'New': 'Command-N',
@@ -81,21 +90,18 @@ class App(tk.Tk):
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         platform = self.tk.call('tk', 'windowingsystem')
+        self.events = EVENTS_APPLE if platform == 'aqua' else EVENTS
         shortcuts = SHORTCUTS_APPLE if platform == 'aqua' else SHORTCUTS
-        if platform == 'aqua':
-            self.bind('<Command-N>', lambda e: New(self))
-            self.bind('<Command-n>', lambda e: New(self))
-            self.bind('<Command-O>', lambda e: self.open())
-            self.bind('<Command-o>', lambda e: self.open())
-        else:
-            self.bind('<Control-N>', lambda e: New(self))
-            self.bind('<Control-n>', lambda e: New(self))
-            self.bind('<Control-O>', lambda e: self.open())
-            self.bind('<Control-o>', lambda e: self.open())
-            self.bind('<Control-Q>', lambda e: self.quit())
-            self.bind('<Control-q>', lambda e: self.quit())
+        self.bind(self.events['New'][0], lambda e: New(self))
+        self.bind(self.events['New'][1], lambda e: New(self))
+        self.bind(self.events['Open'][0], lambda e: self.open())
+        self.bind(self.events['Open'][1], lambda e: self.open())
         self.bind('<Delete>', lambda e: self.delete())
         self.bind('<Return>', lambda e: self.open())
+        if platform != 'aqua':
+            # Do not handle this event on Apple.
+            self.bind('<Control-Q>', lambda e: self.quit())
+            self.bind('<Control-q>', lambda e: self.quit())
         try:
             self.contacts = contacts.load()
         except OSError as err:
@@ -104,8 +110,9 @@ class App(tk.Tk):
                 message='There was an error while loading your contacts.',
                 detail=err
             )
+            self.quit()
         self.filter = ''
-        # The menubar
+        # Menus
         self.option_add('*tearOff', tk.FALSE)
         menubar = tk.Menu(self)
         # The "Apple" menu
@@ -142,8 +149,8 @@ class App(tk.Tk):
             command=lambda: Filter(self),
             underline=0
         )
-        # Do not show this command on Apple.
         if platform != 'aqua':
+            # Do not show this command on Apple.
             menu_contact.add_separator()
             menu_contact.add_command(
                 label='Quit',
@@ -168,7 +175,29 @@ class App(tk.Tk):
             )
             menubar.add_cascade(menu=menu_help, label='Help', underline=0)
         self['menu'] = menubar
-        # The frame
+        # The "Tree" menu
+        menu_tree = tk.Menu(self)
+        menu_tree.add_command(
+            label='New',
+            command=lambda: New(self),
+            underline=0
+        )
+        menu_tree.add_command(
+            label='Open',
+            command=self.open,
+            underline=0
+        )
+        menu_tree.add_separator()
+        menu_tree.add_command(
+            label='Delete',
+            command=self.delete
+        )
+        menu_tree.add_separator()
+        menu_tree.add_command(
+            label='Filter...',
+            command=lambda: Filter(self),
+            underline=0
+        )
         frame = ttk.Frame(self)
         frame.columnconfigure(0, weight=1)
         frame.rowconfigure(0, weight=1)
@@ -176,7 +205,19 @@ class App(tk.Tk):
         self.tree = ttk.Treeview(frame, columns=['email'])
         self.tree.heading('#0', text='Full name')
         self.tree.heading('email', text='Email address')
-        self.tree.tag_bind('contact', '<Double-1>', lambda e: self.open())
+        self.tree.bind(
+            self.events['Menu'][0],
+            lambda e: menu_tree.post(e.x_root, e.y_root)
+        )
+        self.tree.bind(
+            self.events['Menu'][1],
+            lambda e: menu_tree.post(e.x_root, e.y_root)
+        )
+        self.tree.tag_bind(
+            'contact',
+            '<Double-1>',
+            lambda e: self.open()
+        )
         self.load()
         self.tree.grid(column=0, row=0, sticky='nsew')
         # The scrollbar
@@ -246,10 +287,10 @@ class Contact(tk.Toplevel):
         self.bind('<Return>', lambda e: self.button_save.invoke())
         self.bind('<Alt-S>', lambda e: self.button_save.invoke())
         self.bind('<Alt-s>', lambda e: self.button_save.invoke())
-        self.bind('<Alt-F>', lambda e: focus_entry(self.entry_name))
-        self.bind('<Alt-f>', lambda e: focus_entry(self.entry_name))
-        self.bind('<Alt-E>', lambda e: focus_entry(self.entry_email))
-        self.bind('<Alt-e>', lambda e: focus_entry(self.entry_email))
+        self.bind('<Alt-F>', lambda e: self.entry_name.focus())
+        self.bind('<Alt-f>', lambda e: self.entry_name.focus())
+        self.bind('<Alt-E>', lambda e: self.entry_email.focus())
+        self.bind('<Alt-e>', lambda e: self.entry_email.focus())
         self.name = tk.StringVar()
         self.email = tk.StringVar()
         # The frame
@@ -266,17 +307,9 @@ class Contact(tk.Toplevel):
             underline=0
         ).grid(column=0, row=1, padx=(0, 6), pady=(0, 6))
         # Entries
-        self.entry_name = ttk.Entry(
-            frame,
-            textvariable=self.name,
-            width=30
-        )
+        self.entry_name = Entry(frame, textvariable=self.name, width=30)
         self.entry_name.grid(column=1, row=0, pady=(0, 6))
-        self.entry_email = ttk.Entry(
-            frame,
-            textvariable=self.email,
-            width=30
-        )
+        self.entry_email = Entry(frame, textvariable=self.email, width=30)
         self.entry_email.grid(column=1, row=1, pady=(0, 6))
         # Buttons
         frame_buttons = ttk.Frame(frame)
@@ -305,6 +338,55 @@ class Contact(tk.Toplevel):
         self.destroy()
 
 
+class Entry(ttk.Entry):
+    """The 'Entry' widget"""
+
+    def __init__(self, parent, **kwargs):
+        """Initialise the widget."""
+        super().__init__(parent, **kwargs)
+        master = self.winfo_toplevel().master
+        self.bind(master.events['Menu'][0], self.show_menu)
+        self.bind(master.events['Menu'][1], self.show_menu)
+        # The menu
+        self.menu = tk.Menu(self)
+        self.menu.add_command(
+            label='Cut',
+            command=lambda: self.event_generate('<<Cut>>'),
+            underline=2
+        )
+        self.menu.add_command(
+            label='Copy',
+            command=lambda: self.event_generate('<<Copy>>'),
+            underline=0
+        )
+        self.menu.add_command(
+            label='Paste',
+            command=lambda: self.event_generate('<<Paste>>'),
+            underline=0
+        )
+        self.menu.add_command(
+            label='Delete',
+            command=lambda: self.event_generate('<Delete>')
+        )
+        self.menu.add_separator()
+        self.menu.add_command(
+            label='Select All',
+            command=lambda: self.event_generate('<<SelectAll>>'),
+            underline=7
+        )
+
+    def focus(self):
+        """Focus the widget."""
+        super().focus()
+        self.select_range(0, 'end')
+        self.icursor('end')
+
+    def show_menu(self, e):
+        """Show the menu."""
+        super().focus()
+        self.menu.post(e.x_root, e.y_root)
+
+
 class Filter(tk.Toplevel):
     """The 'Filter' window"""
 
@@ -317,8 +399,8 @@ class Filter(tk.Toplevel):
         self.bind('<Alt-C>', lambda e: self.destroy())
         self.bind('<Alt-c>', lambda e: self.destroy())
         self.bind('<Return>', lambda e: self.filter())
-        self.bind('<Alt-F>', lambda e: focus_entry(self.entry))
-        self.bind('<Alt-f>', lambda e: focus_entry(self.entry))
+        self.bind('<Alt-F>', lambda e: self.filter())
+        self.bind('<Alt-f>', lambda e: self.filter())
         self.search = tk.StringVar()
         self.search.set(self.master.filter)
         # The frame
@@ -326,15 +408,10 @@ class Filter(tk.Toplevel):
         # The label
         ttk.Label(
             frame,
-            text='Filter:',
-            underline=0
+            text='Filter:'
         ).grid(column=0, row=0, padx=(0, 6), pady=(0, 6))
         # The entry
-        self.entry = ttk.Entry(
-            frame,
-            textvariable=self.search,
-            width=30
-        )
+        self.entry = Entry(frame, textvariable=self.search, width=30)
         self.entry.grid(column=1, row=0, pady=(0, 6))
         # Buttons
         frame_buttons = ttk.Frame(frame)
@@ -348,11 +425,12 @@ class Filter(tk.Toplevel):
             frame_buttons,
             text='Filter',
             command=self.filter,
-            default='active'
+            default='active',
+            underline=0
         ).grid(column=1, row=0)
         frame_buttons.grid(column=0, row=1, columnspan=2, sticky='e')
         frame.grid()
-        focus_entry(self.entry)
+        self.entry.focus()
 
     def filter(self):
         """Filter the contacts."""
@@ -375,7 +453,8 @@ class New(Contact):
 
     def validate(self, name):
         """Validate the name."""
-        (self.button_save.state(['disabled']) if name in self.master.contacts
+        (self.button_save.state(['disabled'])
+         if name in self.master.contacts or name == ''
          else self.button_save.state(['!disabled']))
         return tk.TRUE
 
@@ -390,13 +469,7 @@ class Update(Contact):
         self.name.set(name)
         self.email.set(self.master.contacts[name])
         self.entry_name.state(['readonly'])
-        focus_entry(self.entry_email)
-
-
-def focus_entry(entry):
-    """Focus the entry."""
-    entry.focus()
-    entry.select_range(0, 'end')
+        self.entry_email.focus()
 
 
 def main():
